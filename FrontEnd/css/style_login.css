@@ -1,0 +1,117 @@
+:root {
+    --azul-900: #12345b;
+    --azul-700: #1f65bd;
+    --azul-600: #2e7de0;
+    --texto: #172033;
+    --texto-suave: #64748b;
+    --borda: #dce6f2;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--texto);
+    background:
+        radial-gradient(circle at top left, #dbeafe 0, transparent 38%),
+        #f3f7fc;
+}
+
+.login-card {
+    width: min(460px, 100%);
+    padding: 38px;
+    border: 1px solid var(--borda);
+    border-radius: 20px;
+    background: white;
+    box-shadow: 0 20px 55px rgba(35, 76, 125, 0.15);
+}
+
+.logo {
+    width: 190px;
+    margin-bottom: 28px;
+}
+
+.rotulo {
+    margin-bottom: 7px;
+    color: var(--azul-600);
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+h1 {
+    color: var(--azul-900);
+    font-size: 2rem;
+}
+
+.descricao {
+    margin: 10px 0 24px;
+    color: var(--texto-suave);
+    line-height: 1.5;
+}
+
+label {
+    display: block;
+    margin: 14px 0 6px;
+    color: #334155;
+    font-weight: 700;
+}
+
+input {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font: inherit;
+    outline: none;
+}
+
+input:focus {
+    border-color: var(--azul-600);
+    box-shadow: 0 0 0 3px rgba(46, 125, 224, 0.12);
+}
+
+button {
+    width: 100%;
+    min-height: 46px;
+    margin-top: 24px;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    background: var(--azul-600);
+    font: inherit;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+button:hover {
+    background: var(--azul-700);
+}
+
+.mensagem {
+    padding: 12px;
+    margin-top: 18px;
+    border-radius: 8px;
+    color: #b42318;
+    background: #fff1f0;
+}
+
+.oculto {
+    display: none;
+}
+
+@media (max-width: 520px) {
+    .login-card {
+        padding: 28px 24px;
+    }
+}

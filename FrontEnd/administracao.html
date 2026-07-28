@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administração | Touch Inventory</title>
+    <link rel="icon" href="/Imagens/logo.svg">
+    <link rel="stylesheet" href="css/style_administracao.css">
+</head>
+<body>
+    <header class="cabecalho">
+        <a class="marca" href="index.html" aria-label="Página inicial">
+            <img src="/Imagens/logo.svg" alt="Touch Inventory">
+            <span>Touch Inventory</span>
+        </a>
+
+        <div class="conta-acoes">
+            <span id="usuarioSessao" class="usuario-sessao"></span>
+            <a class="voltar" href="index.html">Voltar ao inventário</a>
+            <button id="btnSair" type="button">Sair</button>
+        </div>
+    </header>
+
+    <main>
+        <section class="titulo-pagina">
+            <p class="rotulo">Configurações</p>
+            <h1>Administração</h1>
+            <p>
+                Organize as categorias e os tipos de ativo disponíveis
+                no sistema.
+            </p>
+        </section>
+
+        <div id="mensagem" class="mensagem oculto" role="status"></div>
+
+        <div class="admin-grid">
+            <section class="painel">
+                <div class="painel-cabecalho">
+                    <div>
+                        <p class="etapa">Etapa 1</p>
+                        <h2>Categorias</h2>
+                    </div>
+                    <span id="totalCategorias" class="contador">0</span>
+                </div>
+
+                <form id="formCategoria" class="formulario">
+                    <input id="categoriaId" type="hidden">
+
+                    <label for="categoriaNome">Nome da categoria</label>
+                    <div class="linha-formulario">
+                        <input
+                            id="categoriaNome"
+                            type="text"
+                            maxlength="100"
+                            placeholder="Ex.: Equipamentos"
+                            required
+                        >
+                        <button id="salvarCategoria" type="submit">
+                            Adicionar
+                        </button>
+                    </div>
+
+                    <button
+                        id="cancelarCategoria"
+                        class="cancelar oculto"
+                        type="button"
+                    >
+                        Cancelar edição
+                    </button>
+                </form>
+
+                <div id="listaCategorias" class="lista"></div>
+            </section>
+
+            <section class="painel">
+                <div class="painel-cabecalho">
+                    <div>
+                        <p class="etapa">Etapa 2</p>
+                        <h2>Tipos de ativo</h2>
+                    </div>
+                    <span id="totalTipos" class="contador">0</span>
+                </div>
+
+                <form id="formTipo" class="formulario">
+                    <input id="tipoId" type="hidden">
+
+                    <label for="tipoCategoria">Categoria</label>
+                    <select id="tipoCategoria" required>
+                        <option value="">Selecione uma categoria</option>
+                    </select>
+
+                    <label for="tipoNome">Nome do tipo de ativo</label>
+                    <div class="linha-formulario">
+                        <input
+                            id="tipoNome"
+                            type="text"
+                            maxlength="100"
+                            placeholder="Ex.: Notebook"
+                            required
+                        >
+                        <button id="salvarTipo" type="submit">
+                            Adicionar
+                        </button>
+                    </div>
+
+                    <button
+                        id="cancelarTipo"
+                        class="cancelar oculto"
+                        type="button"
+                    >
+                        Cancelar edição
+                    </button>
+                </form>
+
+                <div id="listaTipos" class="lista"></div>
+            </section>
+        </div>
+
+        <section class="painel painel-campos">
+            <div class="painel-cabecalho">
+                <div>
+                    <p class="etapa">Etapa 3</p>
+                    <h2>Campos dos ativos</h2>
+                </div>
+                <span id="totalCampos" class="contador">0</span>
+            </div>
+
+            <div class="seletor-tipo-campos">
+                <div>
+                    <label for="buscaTipoAtivo">
+                        Buscar categoria ou tipo de ativo
+                    </label>
+                    <input
+                        id="buscaTipoAtivo"
+                        type="search"
+                        placeholder="Comece a digitar, ex.: notebook"
+                        autocomplete="off"
+                    >
+                </div>
+
+                <div>
+                    <label for="campoTipoAtivo">
+                        Tipo de ativo que deseja configurar
+                    </label>
+                    <select id="campoTipoAtivo">
+                        <option value="">Selecione um tipo de ativo</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="configuracaoCampos" class="configuracao-campos oculto">
+                <form id="formCampo" class="formulario formulario-campos">
+                    <input id="campoId" type="hidden">
+
+                    <div class="form-grid">
+                        <div class="campo-form campo-maior">
+                            <label for="campoLabel">
+                                Nome exibido para o usuário
+                            </label>
+                            <input
+                                id="campoLabel"
+                                type="text"
+                                maxlength="100"
+                                placeholder="Ex.: Número de série"
+                                required
+                            >
+                        </div>
+
+                        <div class="campo-form">
+                            <label for="campoNome">
+                                Identificador interno
+                            </label>
+                            <input
+                                id="campoNome"
+                                type="text"
+                                maxlength="100"
+                                placeholder="numero_serie"
+                                pattern="[A-Za-z][A-Za-z0-9_]*"
+                                required
+                            >
+                        </div>
+
+                        <div class="campo-form">
+                            <label for="campoFormato">Formato</label>
+                            <select id="campoFormato" required>
+                                <option value="texto">Texto curto</option>
+                                <option value="numero">Número</option>
+                                <option value="data">Data</option>
+                                <option value="booleano">Sim ou não</option>
+                                <option value="select">Lista de seleção</option>
+                                <option value="textarea">Texto longo</option>
+                            </select>
+                        </div>
+
+                        <div class="campo-form campo-ordem">
+                            <label for="campoOrdem">Ordem</label>
+                            <input
+                                id="campoOrdem"
+                                type="number"
+                                min="0"
+                                value="0"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <div id="grupoOpcoes" class="campo-form opcoes oculto">
+                        <label for="campoOpcoes">
+                            Opções da lista
+                        </label>
+                        <textarea
+                            id="campoOpcoes"
+                            placeholder="Uma opção por linha&#10;Disponível&#10;Em uso&#10;Manutenção"
+                        ></textarea>
+                        <small>Informe uma opção por linha.</small>
+                    </div>
+
+                    <div class="opcoes-campo">
+                        <label>
+                            <input id="campoObrigatorio" type="checkbox">
+                            Obrigatório
+                        </label>
+                        <label>
+                            <input id="campoEditavel" type="checkbox" checked>
+                            Editável
+                        </label>
+                        <label>
+                            <input id="campoVisivel" type="checkbox" checked>
+                            Visível
+                        </label>
+                    </div>
+
+                    <div class="acoes-formulario">
+                        <button
+                            id="cancelarCampo"
+                            class="cancelar oculto"
+                            type="button"
+                        >
+                            Cancelar edição
+                        </button>
+                        <button id="salvarCampo" type="submit">
+                            Adicionar campo
+                        </button>
+                    </div>
+                </form>
+
+                <div id="listaCampos" class="lista lista-campos"></div>
+            </div>
+
+            <p id="instrucaoCampos" class="vazio">
+                Selecione um tipo de ativo para cadastrar e organizar
+                seus campos.
+            </p>
+        </section>
+    </main>
+
+    <script src="js/auth.js"></script>
+    <script src="js/administracao.js"></script>
+</body>
+</html>

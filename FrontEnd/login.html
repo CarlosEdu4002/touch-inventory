@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrar | Touch Inventory</title>
+    <link rel="icon" href="/Imagens/logo.svg">
+    <link rel="stylesheet" href="css/style_login.css">
+</head>
+<body>
+    <main class="login-card">
+        <img src="/Imagens/logo.svg" alt="Touch Inventory" class="logo">
+
+        <section id="areaLogin" class="oculto">
+            <p class="rotulo">Touch Inventory</p>
+            <h1>Entrar no sistema</h1>
+            <p class="descricao">
+                Entre com a conta fornecida pelo administrador.
+            </p>
+
+            <form id="formLogin">
+                <label for="login">Usuário</label>
+                <input
+                    id="login"
+                    name="login"
+                    type="text"
+                    autocomplete="username"
+                    required
+                >
+
+                <label for="senha">Senha</label>
+                <input
+                    id="senha"
+                    name="senha"
+                    type="password"
+                    autocomplete="current-password"
+                    required
+                >
+
+                <button type="submit">Entrar</button>
+            </form>
+        </section>
+
+        <section id="areaConfiguracao" class="oculto">
+            <p class="rotulo">Primeiro acesso</p>
+            <h1>Crie o administrador</h1>
+            <p class="descricao">
+                Defina uma senha com pelo menos 8 caracteres para a conta
+                inicial. Os setores e demais usuários poderão ser criados
+                na área de gestão.
+            </p>
+
+            <form id="formConfiguracao">
+                <label for="senhaAdmin">Administrador</label>
+                <input id="senhaAdmin" type="password" minlength="8" required>
+
+                <button type="submit">Salvar e entrar</button>
+            </form>
+        </section>
+
+        <p id="mensagemLogin" class="mensagem oculto" role="alert"></p>
+    </main>
+
+    <script src="js/login.js"></script>
+</body>
+</html>

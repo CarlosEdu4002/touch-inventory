@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão do sistema | Touch Inventory</title>
+    <link rel="icon" href="/Imagens/logo.svg">
+    <link rel="stylesheet" href="css/style_gestao.css">
+</head>
+<body>
+    <header>
+        <a href="index.html">← Voltar ao início</a>
+        <div>
+            <span id="usuarioSessao"></span>
+            <button id="btnSair" type="button">Sair</button>
+        </div>
+    </header>
+    <main>
+        <div class="titulo">
+            <p>ADMINISTRAÇÃO</p>
+            <h1>Gestão do sistema</h1>
+            <span>Contas, acessos e status padronizados dos ativos.</span>
+        </div>
+
+        <section>
+            <div class="secao-titulo">
+                <div>
+                    <p>CONTAS</p>
+                    <h2>Usuários e sessões</h2>
+                </div>
+                <button id="novoUsuario" type="button">Adicionar usuário</button>
+            </div>
+            <div id="listaUsuarios" class="grade"></div>
+        </section>
+
+        <section>
+            <div class="secao-titulo">
+                <div>
+                    <p>CONFIGURAÇÃO</p>
+                    <h2>Status dos ativos</h2>
+                </div>
+                <button id="novoStatus" type="button">Adicionar status</button>
+            </div>
+            <div id="listaStatus" class="grade"></div>
+        </section>
+
+        <section>
+            <div class="secao-titulo">
+                <div>
+                    <p>CONFIGURAÇÃO</p>
+                    <h2>Setores de alocação</h2>
+                </div>
+                <button id="novoSetor" type="button">Adicionar setor</button>
+            </div>
+            <div id="listaSetores" class="grade"></div>
+        </section>
+    </main>
+
+    <dialog id="dialogUsuario">
+        <form id="formUsuario">
+            <h2 id="tituloUsuario">Editar usuário</h2>
+            <input id="usuarioId" type="hidden">
+            <label id="grupoUsuarioLogin">Login<input id="usuarioLogin" minlength="3" maxlength="60"></label>
+            <label>Nome<input id="usuarioNome" required></label>
+            <label id="grupoUsuarioPerfil">Perfil
+                <select id="usuarioPerfil">
+                    <option value="setor">Usuário de setor</option>
+                    <option value="admin">Administrador</option>
+                </select>
+            </label>
+            <label id="grupoUsuarioSetor">Setor<select id="usuarioSetor"></select></label>
+            <label>Senha<input id="usuarioSenha" type="password" minlength="8" placeholder="Deixe vazio para manter"></label>
+            <label class="check"><input id="usuarioAtivo" type="checkbox"> Conta ativa</label>
+            <div class="acoes">
+                <button type="button" data-fechar>Cancelar</button>
+                <button type="submit">Salvar</button>
+            </div>
+        </form>
+    </dialog>
+
+    <dialog id="dialogStatus">
+        <form id="formStatus">
+            <h2>Configurar status</h2>
+            <input id="statusCodigo" type="hidden">
+            <label>Nome<input id="statusNome" required></label>
+            <label>Cor<input id="statusCor" type="color" value="#2563eb"></label>
+            <label>Ordem<input id="statusOrdem" type="number" min="0" value="0"></label>
+            <label class="check"><input id="statusAtivo" type="checkbox" checked> Status ativo</label>
+            <div class="acoes">
+                <button type="button" data-fechar>Cancelar</button>
+                <button type="submit">Salvar</button>
+            </div>
+        </form>
+    </dialog>
+
+    <dialog id="dialogSetor">
+        <form id="formSetor">
+            <h2>Configurar setor</h2>
+            <input id="setorId" type="hidden">
+            <label>Nome do setor<input id="setorNome" required></label>
+            <label class="check">
+                <input id="setorAtivo" type="checkbox" checked>
+                Setor ativo
+            </label>
+            <div class="acoes">
+                <button type="button" data-fechar>Cancelar</button>
+                <button type="submit">Salvar</button>
+            </div>
+        </form>
+    </dialog>
+
+    <script src="js/auth.js"></script>
+    <script src="js/gestao.js"></script>
+</body>
+</html>

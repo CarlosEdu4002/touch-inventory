@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Touch Inventory</title>
+    <link rel="icon" href="/Imagens/logo.svg">
+    <link rel="stylesheet" href="css/style_Index.css">
+</head>
+<body>
+    <main class="pagina-inicial">
+        <header class="cabecalho-inicial">
+            <img
+                class="logo"
+                src="/Imagens/logo.svg"
+                alt="Touch Inventory"
+            >
+
+            <div>
+                <p class="rotulo-sistema">Touch Inventory</p>
+                <h1>Gestão de ativos</h1>
+                <p id="instrucao">
+                    Selecione abaixo o tipo de ativo que deseja consultar.
+                </p>
+            </div>
+
+            <div class="conta-acoes">
+                <span id="usuarioSessao" class="usuario-sessao"></span>
+                <a
+                    class="admin-link"
+                    href="administracao.html"
+                    aria-label="Abrir administração"
+                    title="Administração"
+                >
+                    <span aria-hidden="true">⚙</span>
+                    Administração
+                </a>
+                <a class="admin-link" href="gestao.html" data-admin>
+                    Gestão do sistema
+                </a>
+                <button id="btnSair" class="btn-sair" type="button">
+                    Sair
+                </button>
+            </div>
+        </header>
+
+        <section class="dashboard" aria-label="Resumo patrimonial">
+            <article class="indicador">
+                <span>Total de ativos</span>
+                <strong id="totalAtivos">—</strong>
+            </article>
+            <article class="indicador alerta">
+                <span>Em manutenção</span>
+                <strong id="totalManutencao">—</strong>
+            </article>
+            <article class="indicador">
+                <span>Sem atualização há 180 dias</span>
+                <strong id="totalDesatualizados">—</strong>
+            </article>
+            <article class="movimentacoes">
+                <h2>Movimentações recentes</h2>
+                <div id="movimentacoesRecentes"></div>
+            </article>
+        </section>
+
+        <section
+            id="tiposAtivo"
+            class="categorias-grid"
+            aria-live="polite"
+        >
+            <p class="mensagem-carregamento">
+                Carregando tipos de ativo...
+            </p>
+        </section>
+    </main>
+
+    <script src="js/auth.js"></script>
+    <script src="js/index.js"></script>
+</body>
+</html>

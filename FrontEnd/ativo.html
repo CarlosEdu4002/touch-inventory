@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Detalhe do Ativo</title>
+  <link rel="icon" href="/Imagens/logo.svg">
+  <link rel="stylesheet" href="css/style_ativo.css">
+</head>
+
+<body>
+
+<div class="card">
+
+    <img src="/Imagens/logo.svg"
+         alt="Touch Inventory"
+         class="logo">
+
+    <h1>Detalhe do Ativo</h1>
+
+    <div id="conteudo" class="loading">
+        Carregando dados do ativo...
+    </div>
+
+<div class="botoes">
+    <button class="botao" onclick="voltarPagina()">
+        Voltar
+    </button>
+</div>
+
+<script>
+async function voltarPagina() {
+    const params = new URLSearchParams(window.location.search);
+    const tipo = params.get("tipo");
+    const destino = `/exibeAtivos.html?tipo=${encodeURIComponent(tipo)}`;
+    const response = await fetch("/api/auth/me");
+    window.location.href = response.ok
+        ? destino
+        : `/login.html?retorno=${encodeURIComponent(destino)}`;
+}
+</script>
+
+</div>
+<script src="js/ativo.js"></script>
+
+</body>
+</html>

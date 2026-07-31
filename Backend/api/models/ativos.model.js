@@ -28,6 +28,7 @@ async function listarPorTipo(tipo, usuario) {
             a.dados,
             a.setor_id,
             a.status,
+            a.imagem,
             a.updated_at,
             s.nome AS setor_nome
         FROM ativos a
@@ -57,6 +58,7 @@ async function buscarPorPatrimonio(tipo, patrimonio, usuario) {
             a.dados,
             a.setor_id,
             a.status,
+            a.imagem,
             a.updated_at,
             s.nome AS setor_nome
         FROM ativos a
@@ -141,6 +143,17 @@ async function atualizar(
     return resultado.rows[0];
 }
 
+async function atualizarImagem(id, imagem) {
+    const resultado = await pool.query(
+        `UPDATE ativos
+         SET imagem = $1, updated_at = NOW()
+         WHERE id = $2
+         RETURNING imagem`,
+        [imagem, id]
+    );
+    return resultado.rows[0];
+}
+
 async function remover(tipoId, patrimonio, usuario) {
     const resultado = await pool.query(
         `
@@ -157,7 +170,7 @@ async function remover(tipoId, patrimonio, usuario) {
                     AND c.setor_id = $4
               )
           )
-        RETURNING id, tipo_ativo_id, setor_id, patrimonio, status, dados
+        RETURNING id, tipo_ativo_id, setor_id, patrimonio, status, dados, imagem
         `,
         [patrimonio, tipoId, usuario.perfil, usuario.setor_id]
     );
@@ -168,7 +181,7 @@ async function remover(tipoId, patrimonio, usuario) {
 async function buscarPublico(tipo, patrimonio) {
     const resultado = await pool.query(
         `SELECT
-            a.id, a.tipo_ativo_id, a.patrimonio, a.dados,
+            a.id, a.tipo_ativo_id, a.patrimonio, a.dados, a.imagem,
             a.setor_id, a.status, a.updated_at,
             s.nome AS setor_nome,
             t.nome AS tipo_nome,
@@ -202,6 +215,7 @@ module.exports = {
     buscarPublico,
     criar,
     atualizar,
+    atualizarImagem,
     remover,
     transferir
 };

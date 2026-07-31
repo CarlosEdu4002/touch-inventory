@@ -37,55 +37,61 @@ body {
     padding: 64px 0;
 }
 
-.admin-link {
-    align-self: flex-start;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 14px;
-    border: 1px solid #cfe0f5;
-    border-radius: 9px;
-    color: var(--azul-700);
-    background: rgba(255, 255, 255, 0.9);
-    font-weight: 700;
-    text-decoration: none;
-    margin-left: 0;
-    transition:
-        background 0.18s ease,
-        color 0.18s ease;
+.conta-acoes {
+    align-self: stretch;
+    display: grid;
+    flex: 0 0 275px;
+    overflow: hidden;
+    margin-left: auto;
+    border: 1px solid var(--borda);
+    border-radius: 14px;
+    background: #f8fbff;
 }
 
-.conta-acoes {
-    align-self: flex-start;
+.painel-administrativo {
+    padding: 18px;
+}
+
+.painel-titulo {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
-    flex-wrap: wrap;
     gap: 8px;
-    margin-left: auto;
+    margin-bottom: 12px;
+    color: var(--azul-900);
+    font-size: 0.82rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
 }
 
-.usuario-sessao {
-    color: var(--texto-suave);
-    font-size: 0.86rem;
-    font-weight: 700;
+.painel-icone {
+    color: var(--azul-600);
+    font-size: 1.05rem;
 }
 
-.btn-sair {
+.painel-links {
+    display: grid;
+    gap: 8px;
+}
+
+.admin-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
     min-height: 42px;
-    padding: 9px 13px;
+    padding: 10px 13px;
     border: 1px solid #cfe0f5;
     border-radius: 9px;
     color: var(--azul-700);
     background: var(--branco);
-    font: inherit;
     font-weight: 700;
-    cursor: pointer;
-}
-
-.btn-sair:hover {
-    color: var(--branco);
-    background: var(--azul-700);
+    text-decoration: none;
+    transition:
+        background 0.18s ease,
+        border-color 0.18s ease,
+        color 0.18s ease,
+        transform 0.18s ease;
 }
 
 .admin-link span {
@@ -94,8 +100,64 @@ body {
 
 .admin-link:hover,
 .admin-link:focus-visible {
+    border-color: var(--azul-600);
     color: var(--branco);
     background: var(--azul-700);
+    transform: translateX(2px);
+    outline: none;
+}
+
+.sessao-acoes {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 14px 18px;
+    border-top: 1px solid var(--borda);
+    background: var(--branco);
+}
+
+.sessao-identidade {
+    display: grid;
+    min-width: 0;
+    gap: 2px;
+}
+
+.sessao-rotulo {
+    color: var(--texto-suave);
+    font-size: 0.72rem;
+}
+
+.usuario-sessao {
+    overflow: hidden;
+    color: var(--azul-900);
+    font-size: 0.86rem;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.btn-sair {
+    min-height: 38px;
+    padding: 8px 13px;
+    border: 1px solid #f1c7c7;
+    border-radius: 9px;
+    color: #b42318;
+    background: #fff7f7;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        background 0.18s ease,
+        border-color 0.18s ease,
+        color 0.18s ease;
+}
+
+.btn-sair:hover,
+.btn-sair:focus-visible {
+    border-color: #b42318;
+    color: var(--branco);
+    background: #b42318;
     outline: none;
 }
 
@@ -268,6 +330,17 @@ h1 {
     text-align: center;
 }
 
+@media (max-width: 960px) {
+    .cabecalho-inicial {
+        flex-wrap: wrap;
+    }
+
+    .conta-acoes {
+        flex-basis: 100%;
+        margin-left: 0;
+    }
+}
+
 @media (max-width: 680px) {
     .pagina-inicial {
         width: min(100% - 24px, 1120px);
@@ -283,7 +356,8 @@ h1 {
 
     .conta-acoes {
         align-self: stretch;
-        justify-content: center;
+        flex-basis: auto;
+        width: 100%;
         margin-left: 0;
     }
 

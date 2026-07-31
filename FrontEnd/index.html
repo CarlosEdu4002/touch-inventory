@@ -24,24 +24,34 @@
                 </p>
             </div>
 
-            <div class="conta-acoes">
-                <span id="usuarioSessao" class="usuario-sessao"></span>
-                <a
-                    class="admin-link"
-                    href="administracao.html"
-                    aria-label="Abrir administração"
-                    title="Administração"
-                >
-                    <span aria-hidden="true">⚙</span>
-                    Administração
-                </a>
-                <a class="admin-link" href="gestao.html" data-admin>
-                    Gestão do sistema
-                </a>
-                <button id="btnSair" class="btn-sair" type="button">
-                    Sair
-                </button>
-            </div>
+            <aside class="conta-acoes" aria-label="Acesso e sessão">
+                <div class="painel-administrativo">
+                    <p class="painel-titulo">
+                        <span class="painel-icone" aria-hidden="true">⚙</span>
+                        Área administrativa
+                    </p>
+                    <nav class="painel-links" aria-label="Opções administrativas">
+                        <a class="admin-link" href="administracao.html">
+                            Administração
+                            <span aria-hidden="true">›</span>
+                        </a>
+                        <a class="admin-link" href="gestao.html" data-admin>
+                            Gestão do sistema
+                            <span aria-hidden="true">›</span>
+                        </a>
+                    </nav>
+                </div>
+
+                <div class="sessao-acoes">
+                    <div class="sessao-identidade">
+                        <span class="sessao-rotulo">Sessão ativa</span>
+                        <strong id="usuarioSessao" class="usuario-sessao"></strong>
+                    </div>
+                    <button id="btnSair" class="btn-sair" type="button">
+                        Sair
+                    </button>
+                </div>
+            </aside>
         </header>
 
         <section class="dashboard" aria-label="Resumo patrimonial">

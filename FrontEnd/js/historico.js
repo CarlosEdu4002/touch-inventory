@@ -3,7 +3,10 @@ const modalTransferencia = document.getElementById("modalTransferencia");
 
 function exigirAtivoSelecionado() {
     if (!ativoSelecionado) {
-        alert("Selecione um ativo");
+        mostrarNotificacao(
+            "Selecione um ativo para realizar esta ação.",
+            "aviso"
+        );
         return false;
     }
     return true;
@@ -59,7 +62,7 @@ document.getElementById("btnHistorico").addEventListener("click", async () => {
         });
         modalHistorico.classList.remove("oculto");
     } catch (erro) {
-        alert(erro.message);
+        mostrarNotificacao(erro.message, "erro");
     }
 });
 
@@ -116,6 +119,6 @@ document
             ativoSelecionado = null;
             await carregarAtivos();
         } catch (erro) {
-            alert(erro.message);
+            mostrarNotificacao(erro.message, "erro");
         }
     });

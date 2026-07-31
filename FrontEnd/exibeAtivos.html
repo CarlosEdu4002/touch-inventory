@@ -16,15 +16,6 @@
 
         <div class="acoes-cabecalho">
             <span id="usuarioSessao" class="usuario-sessao"></span>
-            <a
-                class="atalho-admin"
-                href="administracao.html"
-                aria-label="Abrir administração"
-                title="Administração"
-            >
-                <span aria-hidden="true">⚙</span>
-                Administração
-            </a>
             <button id="btnRetornar" type="button">
                 Voltar para seleção
             </button>
@@ -39,7 +30,8 @@
             </p>
             <h1 id="tipoAtual">Carregando tipo de ativo...</h1>
             <p class="descricao-lista">
-                Consulte e gerencie os itens patrimoniais deste tipo.
+                Toque ou clique em uma linha para selecioná-la. Use
+                <strong>Abrir</strong> para consultar os detalhes.
             </p>
         </section>
 
@@ -50,9 +42,6 @@
                     <button id="btnEditar" type="button">Editar</button>
                     <button id="btnRemover" type="button" class="secundario">
                         Remover
-                    </button>
-                    <button id="btnEtiqueta" type="button">
-                        Imprimir etiqueta
                     </button>
                     <button id="btnHistorico" type="button" class="secundario">
                         Histórico
@@ -85,6 +74,13 @@
             </div>
         </section>
     </main>
+
+    <div
+        id="notificacoes"
+        class="notificacoes"
+        aria-live="polite"
+        aria-atomic="true"
+    ></div>
 
     <div id="modal" class="modal oculto">
         <div class="modal-conteudo">

@@ -2,6 +2,49 @@ const ativosModel = require("../models/ativos.model");
 const setoresModel = require("../models/setores.model");
 const historicoModel = require("../models/historico.model");
 const gestaoModel = require("../models/gestao.model");
+const fs = require("fs/promises");
+const path = require("path");
+const crypto = require("crypto");
+
+const DIRETORIO_IMAGENS = path.join(__dirname, "../../../uploads/ativos");
+const TIPOS_IMAGEM = {
+    "image/jpeg": "jpg",
+    "image/png": "png",
+    "image/webp": "webp"
+};
+
+function urlImagem(nome) {
+    return nome ? `/uploads/ativos/${encodeURIComponent(nome)}` : null;
+}
+
+async function salvarImagem(valor) {
+    const correspondencia =
+        /^data:(image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/=]+)$/.exec(
+            String(valor || "")
+        );
+    if (!correspondencia || !TIPOS_IMAGEM[correspondencia[1]]) {
+        const erro = new Error("Imagem inválida. Use JPG, PNG ou WebP");
+        erro.status = 400;
+        throw erro;
+    }
+    const conteudo = Buffer.from(correspondencia[2], "base64");
+    if (!conteudo.length || conteudo.length > 2 * 1024 * 1024) {
+        const erro = new Error("A imagem deve ter no máximo 2 MB");
+        erro.status = 400;
+        throw erro;
+    }
+    await fs.mkdir(DIRETORIO_IMAGENS, { recursive: true });
+    const nome = `${crypto.randomUUID()}.${TIPOS_IMAGEM[correspondencia[1]]}`;
+    await fs.writeFile(path.join(DIRETORIO_IMAGENS, nome), conteudo, { flag: "wx" });
+    return nome;
+}
+
+async function excluirImagem(nome) {
+    if (!nome) return;
+    await fs.unlink(path.join(DIRETORIO_IMAGENS, path.basename(nome))).catch((erro) => {
+        if (erro.code !== "ENOENT") throw erro;
+    });
+}
 
 // =====================
 // Regras de negócio
@@ -16,6 +59,7 @@ async function listarAtivos(tipo, usuario) {
         setor_id: ativo.setor_id,
         setor: ativo.setor_nome,
         status: ativo.status,
+        imagem_url: urlImagem(ativo.imagem),
         atualizado_em: ativo.updated_at
     }));
 }
@@ -39,6 +83,7 @@ async function buscarAtivo(tipo, patrimonio, usuario) {
         setor_id: ativo.setor_id,
         setor: ativo.setor_nome,
         status: ativo.status,
+        imagem_url: urlImagem(ativo.imagem),
         atualizado_em: ativo.updated_at
     };
 }
@@ -91,6 +136,7 @@ async function criarAtivo(tipo, body, usuario) {
         setor_id,
         setor,
         status = "em_uso",
+        imagem,
         ...dados
     } = body;
 
@@ -117,6 +163,16 @@ async function criarAtivo(tipo, body, usuario) {
         await validarStatus(status),
         dados
     );
+    if (imagem) {
+        const nomeImagem = await salvarImagem(imagem);
+        try {
+            await ativosModel.atualizarImagem(ativo.id, nomeImagem);
+        } catch (erro) {
+            await excluirImagem(nomeImagem);
+            throw erro;
+        }
+        ativo.imagem = nomeImagem;
+    }
     await historicoModel.registrar({
         ativo_id: ativo.id,
         patrimonio: ativo.patrimonio,
@@ -137,6 +193,8 @@ async function atualizarAtivo(tipo, patrimonioAtual, body, usuario) {
         setor_id,
         setor,
         status = "em_uso",
+        imagem,
+        remover_imagem = false,
         ...dados
     } = body;
 
@@ -180,6 +238,21 @@ async function atualizarAtivo(tipo, patrimonioAtual, body, usuario) {
         const erro = new Error("Ativo não encontrado");
         erro.status = 404;
         throw erro;
+    }
+
+    if (imagem || remover_imagem === true) {
+        const imagemAnterior = anterior.imagem;
+        const novaImagem = imagem ? await salvarImagem(imagem) : null;
+        try {
+            await ativosModel.atualizarImagem(ativoAtualizado.id, novaImagem);
+            ativoAtualizado.imagem = novaImagem;
+            await excluirImagem(imagemAnterior);
+        } catch (erro) {
+            await excluirImagem(novaImagem);
+            throw erro;
+        }
+    } else {
+        ativoAtualizado.imagem = anterior.imagem;
     }
 
     const alterados = camposAlterados(
@@ -233,6 +306,7 @@ async function removerAtivo(tipo, patrimonio, usuario) {
         erro.status = 404;
         throw erro;
     }
+    await excluirImagem(ativoRemovido.imagem);
     await historicoModel.registrar({
         ativo_id: null,
         patrimonio: ativoRemovido.patrimonio,

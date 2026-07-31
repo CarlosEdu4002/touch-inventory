@@ -7,6 +7,81 @@ const btnCancelar = document.getElementById("cancelarModal");
 let modoModal = "cadastro";
 let ativoEditando = null;
 let camposFormulario = [];
+let imagemPendente = null;
+let removerImagemAtual = false;
+
+function redimensionarImagem(arquivo) {
+    return new Promise((resolve, reject) => {
+        if (!["image/jpeg", "image/png", "image/webp"].includes(arquivo.type)) {
+            reject(new Error("Selecione uma imagem JPG, PNG ou WebP."));
+            return;
+        }
+        const leitor = new FileReader();
+        leitor.onerror = () => reject(new Error("Não foi possível ler a imagem."));
+        leitor.onload = () => {
+            const imagem = new Image();
+            imagem.onerror = () => reject(new Error("Arquivo de imagem inválido."));
+            imagem.onload = () => {
+                const limite = 1280;
+                const escala = Math.min(1, limite / Math.max(imagem.width, imagem.height));
+                const canvas = document.createElement("canvas");
+                canvas.width = Math.round(imagem.width * escala);
+                canvas.height = Math.round(imagem.height * escala);
+                canvas.getContext("2d").drawImage(imagem, 0, 0, canvas.width, canvas.height);
+                resolve(canvas.toDataURL("image/jpeg", 0.82));
+            };
+            imagem.src = leitor.result;
+        };
+        leitor.readAsDataURL(arquivo);
+    });
+}
+
+function criarCampoImagem(ativo) {
+    const grupo = document.createElement("div");
+    const label = document.createElement("label");
+    const input = document.createElement("input");
+    const previa = document.createElement("img");
+    const remover = document.createElement("button");
+    const ajuda = document.createElement("small");
+    grupo.className = "grupo-campo campo-imagem";
+    label.htmlFor = "campo-imagem";
+    label.textContent = "Imagem do ativo (opcional)";
+    input.id = "campo-imagem";
+    input.type = "file";
+    input.accept = "image/jpeg,image/png,image/webp";
+    previa.className = "imagem-previa";
+    previa.alt = "Prévia da imagem do ativo";
+    remover.type = "button";
+    remover.className = "secundario remover-imagem";
+    remover.textContent = "Remover imagem";
+    ajuda.textContent = "JPG, PNG ou WebP. Otimização automática.";
+    const atualizarPrevia = (origem) => {
+        previa.src = origem || "";
+        previa.hidden = !origem;
+        remover.hidden = !origem;
+    };
+    atualizarPrevia(ativo.imagem_url);
+    input.addEventListener("change", async () => {
+        const arquivo = input.files[0];
+        if (!arquivo) return;
+        try {
+            imagemPendente = await redimensionarImagem(arquivo);
+            removerImagemAtual = false;
+            atualizarPrevia(imagemPendente);
+        } catch (erro) {
+            input.value = "";
+            mostrarNotificacao(erro.message, "erro");
+        }
+    });
+    remover.addEventListener("click", () => {
+        imagemPendente = null;
+        removerImagemAtual = true;
+        input.value = "";
+        atualizarPrevia(null);
+    });
+    grupo.append(label, input, previa, remover, ajuda);
+    return grupo;
+}
 
 function criarControleCampo(campo, valor, edicao) {
     const grupo = document.createElement("div");
@@ -90,6 +165,8 @@ async function montarFormulario(ativo = {}) {
     const contexto = await obterContextoTipo(tipo);
     camposFormulario = contexto.campos;
     camposModal.innerHTML = "";
+    imagemPendente = null;
+    removerImagemAtual = false;
 
     camposFormulario.forEach((campo) => {
         const valor =
@@ -104,6 +181,7 @@ async function montarFormulario(ativo = {}) {
             )
         );
     });
+    camposModal.appendChild(criarCampoImagem(ativo));
 }
 
 async function abrirModal() {
@@ -115,7 +193,7 @@ async function abrirModal() {
         modal.classList.remove("oculto");
     } catch (erro) {
         console.error(erro);
-        alert(erro.message);
+        mostrarNotificacao(erro.message, "erro");
     }
 }
 
@@ -128,7 +206,7 @@ async function abrirModalEdicao(ativo) {
         modal.classList.remove("oculto");
     } catch (erro) {
         console.error(erro);
-        alert(erro.message);
+        mostrarNotificacao(erro.message, "erro");
     }
 }
 
@@ -160,6 +238,8 @@ function coletarDadosFormulario() {
         dados[campo.nome] = controle.value.trim();
     });
 
+    if (imagemPendente) dados.imagem = imagemPendente;
+    if (removerImagemAtual) dados.remover_imagem = true;
     return dados;
 }
 
@@ -187,7 +267,7 @@ formModal.addEventListener("submit", async (evento) => {
         await carregarAtivos();
     } catch (erro) {
         console.error(erro);
-        alert(erro.message);
+        mostrarNotificacao(erro.message, "erro");
     }
 });
 

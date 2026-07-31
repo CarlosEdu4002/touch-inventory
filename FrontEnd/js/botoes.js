@@ -26,7 +26,10 @@ if (btnEditar) {
     btnEditar.addEventListener("click", async () => {
 
         if (!ativoSelecionado) {
-            alert("Selecione um ativo");
+            mostrarNotificacao(
+                "Selecione um ativo antes de editar.",
+                "aviso"
+            );
             return;
         }
 
@@ -47,7 +50,10 @@ if (btnRemover) {
     btnRemover.addEventListener("click", () => {
 
         if (!ativoSelecionado) {
-            alert("Selecione um ativo");
+            mostrarNotificacao(
+                "Selecione um ativo antes de remover.",
+                "aviso"
+            );
             return;
         }
 
@@ -61,7 +67,10 @@ if (btnRemover) {
 
                 const dados = await resposta.json();
 
-                alert(dados.mensagem);
+                mostrarNotificacao(
+                    dados.mensagem || "Ativo removido com sucesso.",
+                    "sucesso"
+                );
 
                 ativoSelecionado = null;
                 carregarAtivos();
@@ -69,35 +78,14 @@ if (btnRemover) {
             } catch (erro) {
 
                 console.error(erro);
-                alert("Erro ao remover ativo");
+                mostrarNotificacao(
+                    "Não foi possível remover o ativo.",
+                    "erro"
+                );
 
             }
 
         });
-
-    });
-
-}
-
-// =====================
-// Imprimir Etiqueta
-// =====================
-
-const btnEtiqueta = document.getElementById("btnEtiqueta");
-
-if (btnEtiqueta) {
-
-    btnEtiqueta.addEventListener("click", () => {
-
-        if (!ativoSelecionado) {
-            alert("Selecione um ativo");
-            return;
-        }
-
-        window.open(
-            `etiqueta.html?tipo=${tipo}&id=${ativoSelecionado}`,
-            "_blank"
-        );
 
     });
 

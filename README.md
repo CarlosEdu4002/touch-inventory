@@ -16,7 +16,6 @@ O Touch Inventory foi projetado para organizações de diferentes segmentos. Cad
 - usuários administradores e usuários vinculados a setores;
 - gerenciamento de contas e encerramento de sessões;
 - consulta pública de ativos por links gravados em etiquetas NFC;
-- impressão de etiquetas;
 - interface responsiva.
 
 ## Tecnologias
@@ -138,9 +137,9 @@ No primeiro acesso, crie a senha da conta `admin`. Essa conta possui acesso comp
 
 Nenhum setor ou usuário operacional é criado automaticamente.
 
-## Etiquetas NFC
+## Consulta por NFC
 
-Depois de cadastrar um ativo, use a opção **Imprimir etiqueta**. O endereço público possui o formato:
+Depois de cadastrar um ativo, abra seus detalhes e copie o endereço público, que possui o formato:
 
 ```text
 https://inventario.exemplo.com/ativo.html?tipo=TIPO&id=PATRIMONIO

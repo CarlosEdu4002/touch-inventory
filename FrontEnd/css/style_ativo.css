@@ -8,23 +8,26 @@ body{
     font-family:'Segoe UI', sans-serif;
     background:#9ba3aa;
     min-height:100vh;
+    min-height:100dvh;
 
     display:flex;
     justify-content:center;
     align-items:center;
 
-    padding:20px;
+    padding:clamp(8px, 2vh, 20px);
+    overflow:hidden;
 }
 
 .card{
     width:100%;
-    max-width:700px;
+    max-width:900px;
 
     background:white;
 
     border-radius:12px;
 
-    padding:30px;
+    max-height:calc(100dvh - 16px);
+    padding:clamp(14px, 2.5vh, 30px);
 
     box-shadow:40px 30px 15px rgba(0,0,0,0.12);
 }
@@ -33,15 +36,15 @@ h1{
     text-align:center;
     color:#1d3557;
 
-    margin-bottom:25px;
-    padding-bottom:15px;
+    margin-bottom:clamp(8px, 1.8vh, 20px);
+    padding-bottom:clamp(7px, 1.2vh, 13px);
 
     border-bottom:2px solid #e5e5e5;
 }
 
 .linha{
     display:flex;
-    padding:12px 0;
+    padding:clamp(5px, 1vh, 10px) 0;
 
     border-bottom:1px solid #ececec;
 
@@ -84,7 +87,7 @@ h1{
 }
 
 .botoes{
-    margin-top:25px;
+    margin-top:clamp(8px, 1.5vh, 18px);
 
     display:flex;
     justify-content:center;
@@ -112,6 +115,21 @@ h1{
 }
 
 .logo{
-    width:100px;
+    width:clamp(62px, 10vh, 92px);
     height:auto;
 }
+
+#conteudo { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(260px,.85fr); grid-auto-flow:column; column-gap:clamp(22px,4vw,48px); align-items:start; }
+#conteudo.sem-imagem { grid-template-columns:1fr; }
+.imagem-ativo { grid-column:2; grid-row:1 / span 99; width:100%; height:clamp(230px,42vh,360px); margin:0; border-radius:10px; object-fit:contain; background:#f4f7fb; }
+.linha { grid-column:1; }
+@media (max-height:650px) { .logo { display:none; } h1 { font-size:1.45rem; } .linha { font-size:14px; } .imagem-ativo { height:min(48vh,250px); } }
+@media (max-width:600px) {
+    body { align-items:center; padding:8px; }
+    .card { max-width:calc(100vw - 16px); padding:clamp(12px,3.5vw,18px); box-shadow:0 12px 28px rgba(0,0,0,.16); }
+    #conteudo { grid-template-columns:minmax(0,1.15fr) minmax(125px,.85fr); column-gap:12px; }
+    .imagem-ativo { height:clamp(180px,34vh,280px); }
+    .linha { align-items:flex-start; gap:6px; font-size:clamp(12px,3.2vw,14px); }
+    .label { min-width:44%; }
+}
+@media (max-width:380px) { #conteudo { grid-template-columns:minmax(0,1.25fr) minmax(105px,.75fr); column-gap:8px; } .imagem-ativo { height:190px; } }

@@ -52,6 +52,14 @@ async function carregarAtivo() {
             throw new Error(dados.erro || "Ativo não encontrado");
         }
         container.innerHTML = "";
+        container.classList.toggle("sem-imagem", !dados.ativo.imagem_url);
+        if (dados.ativo.imagem_url) {
+            const imagem = document.createElement("img");
+            imagem.className = "imagem-ativo";
+            imagem.src = dados.ativo.imagem_url;
+            imagem.alt = `Imagem do ativo ${dados.ativo.patrimonio}`;
+            container.appendChild(imagem);
+        }
         adicionarLinha(container, "Patrimônio", dados.ativo.patrimonio);
         adicionarLinha(container, "Tipo de ativo", dados.tipo.nome);
         adicionarLinha(container, "Categoria", dados.tipo.categoria_nome);

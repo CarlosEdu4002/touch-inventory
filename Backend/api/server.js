@@ -27,11 +27,19 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: "3mb" }));
 
 app.use(
     "/Imagens",
     express.static(path.join(__dirname, "../../Imagens"))
+);
+
+app.use(
+    "/uploads/ativos",
+    express.static(path.join(__dirname, "../../uploads/ativos"), {
+        fallthrough: false,
+        maxAge: "1d"
+    })
 );
 
 app.use(

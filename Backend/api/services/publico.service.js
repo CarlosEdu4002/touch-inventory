@@ -26,7 +26,10 @@ async function buscarAtivo(tipo, patrimonio) {
             patrimonio: ativo.patrimonio,
             setor: ativo.setor_nome,
             status: statusAtual?.nome || ativo.status,
-            ...(ativo.dados || {})
+            ...(ativo.dados || {}),
+            imagem_url: ativo.imagem
+                ? `/uploads/ativos/${encodeURIComponent(ativo.imagem)}`
+                : null
         },
         campos: campos
             .filter((campo) => campo.visivel !== false)

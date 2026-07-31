@@ -104,27 +104,6 @@ textarea {
     font-weight: 700;
 }
 
-.atalho-admin {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    min-height: 40px;
-    padding: 9px 14px;
-    border: 1px solid #cfe0f5;
-    border-radius: 8px;
-    color: var(--azul-700);
-    background: var(--branco);
-    font-weight: 700;
-    text-decoration: none;
-}
-
-.atalho-admin:hover,
-.atalho-admin:focus-visible {
-    color: var(--branco);
-    background: var(--azul-700);
-    outline: none;
-}
-
 main {
     width: min(1300px, calc(100% - 44px));
     margin: 0 auto;
@@ -164,6 +143,10 @@ h1 {
 .descricao-lista {
     margin-top: 10px;
     color: var(--texto-suave);
+}
+
+.descricao-lista strong {
+    color: var(--azul-700);
 }
 
 .painel-ativos {
@@ -265,9 +248,28 @@ td {
     border-bottom: 1px solid #edf2f7;
 }
 
+.coluna-acoes {
+    width: 1%;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.btn-abrir-ativo {
+    min-height: 36px;
+    padding: 7px 13px;
+    color: var(--azul-700);
+    background: var(--branco);
+}
+
+.btn-abrir-ativo:hover,
+.btn-abrir-ativo:focus-visible {
+    color: var(--branco);
+}
+
 tbody tr {
     cursor: pointer;
     transition: background 0.15s ease;
+    -webkit-tap-highlight-color: rgba(46, 125, 224, 0.12);
 }
 
 tbody tr:hover {
@@ -276,6 +278,90 @@ tbody tr:hover {
 
 .selecionado {
     background: #cfe2ff !important;
+    box-shadow: inset 4px 0 0 var(--azul-600);
+}
+
+.notificacoes {
+    position: fixed;
+    top: 22px;
+    right: 22px;
+    z-index: 2000;
+    width: min(390px, calc(100vw - 32px));
+    pointer-events: none;
+}
+
+.notificacao {
+    display: grid;
+    grid-template-columns: auto 32px;
+    align-items: center;
+    gap: 14px;
+    min-height: 64px;
+    padding: 14px 12px 14px 18px;
+    border: 1px solid #f4d28a;
+    border-left: 5px solid #d97706;
+    border-radius: 12px;
+    color: #7a4500;
+    background: #fffaf0;
+    box-shadow: 0 16px 42px rgba(23, 32, 51, 0.22);
+    animation: notificacao-entrada 0.22s ease-out;
+    pointer-events: auto;
+}
+
+.notificacao p {
+    line-height: 1.4;
+}
+
+.notificacao-sucesso {
+    border-color: #a7dfbd;
+    border-left-color: #15803d;
+    color: #14532d;
+    background: #f0fdf4;
+}
+
+.notificacao-erro {
+    border-color: #f1b4b4;
+    border-left-color: #c62828;
+    color: #7f1d1d;
+    background: #fff5f5;
+}
+
+.notificacao-fechar {
+    align-self: start;
+    min-height: 32px;
+    padding: 0;
+    border: 0;
+    color: currentColor;
+    background: transparent;
+    font-size: 1.45rem;
+    line-height: 1;
+    opacity: 0.65;
+}
+
+.notificacao-fechar:hover,
+.notificacao-fechar:focus-visible {
+    border: 0;
+    color: currentColor;
+    background: rgba(0, 0, 0, 0.06);
+    transform: none;
+    opacity: 1;
+}
+
+.notificacao-saindo {
+    animation: notificacao-saida 0.18s ease-in forwards;
+}
+
+@keyframes notificacao-entrada {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes notificacao-saida {
+    to {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
 }
 
 tbody tr:last-child td {
@@ -341,6 +427,15 @@ tbody tr:last-child td {
     resize: vertical;
 }
 
+.campo-imagem { display: grid; gap: 9px; }
+.campo-imagem input[type="file"] { padding: 8px; background: #f8fafc; }
+.imagem-previa {
+    width: 100%; max-height: 190px; border: 1px solid var(--borda);
+    border-radius: 10px; object-fit: contain; background: #f8fafc;
+}
+.remover-imagem { justify-self: start; }
+.campo-imagem small { color: var(--texto-suave); }
+
 .acoes-modal {
     display: flex;
     justify-content: flex-end;
@@ -382,10 +477,6 @@ tbody tr:last-child td {
         width: 100%;
     }
 
-    .atalho-admin {
-        justify-content: center;
-    }
-
     .marca img {
         width: 112px;
     }
@@ -406,5 +497,21 @@ tbody tr:last-child td {
     .toolbar button,
     .busca input {
         width: 100%;
+    }
+
+    th,
+    td {
+        padding: 13px 12px;
+    }
+
+    .btn-abrir-ativo {
+        min-width: 72px;
+        min-height: 44px;
+    }
+
+    .notificacoes {
+        top: 12px;
+        right: 12px;
+        width: calc(100vw - 24px);
     }
 }

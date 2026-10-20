@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuração de plantas | Touch Inventory</title>
+    <link rel="icon" href="/Imagens/favicon.svg">
+    <link rel="stylesheet" href="css/style_mapa.css">
+</head>
+<body>
+    <header class="barra-topo">
+        <a class="voltar" href="mapa.html">← Mapa de ativos</a>
+        <div class="titulo-topo"><span>ADMINISTRAÇÃO</span><strong>Configuração de plantas</strong></div>
+        <div class="conta"><span id="usuarioSessao"></span><button id="btnSair" type="button">Sair</button></div>
+    </header>
+
+    <main class="pagina-editor">
+        <aside class="editor-controles">
+            <section class="cartao-editor">
+                <div class="secao-linha"><h2>Plantas</h2><button id="novaPlanta" type="button">Nova</button></div>
+                <select id="seletorPlantaAdmin"><option value="">Selecione uma planta</option></select>
+                <div id="acoesPlanta" class="acoes-editor" hidden>
+                    <button id="editarPlanta" type="button">Editar dados</button>
+                    <button id="excluirPlanta" type="button" class="perigo">Excluir</button>
+                </div>
+            </section>
+
+            <section id="configuracaoAmbiente" class="cartao-editor" hidden>
+                <div class="secao-linha"><h2>Ambientes</h2><button id="novoAmbiente" type="button">Novo</button></div>
+                <p class="instrucao">Clique nas quinas da sala para marcar ao menos três pontos. Use a roda do mouse para aproximar, Espaço + arraste para mover a planta e arraste um ponto para corrigir sua posição.</p>
+                <div id="listaAmbientesAdmin" class="lista-ambientes"></div>
+                <form id="formAmbiente" hidden>
+                    <input id="ambienteId" type="hidden">
+                    <label>Nome do ambiente<input id="ambienteNome" required maxlength="120" placeholder="Ex.: Sala de TI"></label>
+                    <label>Setor relacionado<select id="ambienteSetor" required></select></label>
+                    <div class="linha-campos">
+                        <label>Cor<input id="ambienteCor" type="color" value="#2563eb"></label>
+                        <label class="check"><input id="ambientePadrao" type="checkbox"> Destino padrão</label>
+                    </div>
+                    <div class="linha-pontos-editor">
+                        <p id="contadorPontos">0 pontos marcados</p>
+                        <button id="desfazerPonto" type="button" disabled>Desfazer último ponto</button>
+                    </div>
+                    <div class="acoes-editor">
+                        <button id="redesenharAmbiente" type="button">Redesenhar</button>
+                        <button id="cancelarAmbiente" type="button">Cancelar</button>
+                        <button type="submit">Salvar ambiente</button>
+                    </div>
+                </form>
+            </section>
+        </aside>
+
+        <section class="area-planta editor-area">
+            <div id="ferramentasEditor" class="ferramentas-mapa ferramentas-editor" aria-label="Ferramentas de navegação da planta" hidden>
+                <button id="zoomEditorMais" type="button" title="Aproximar planta" aria-label="Aproximar planta">＋</button>
+                <button id="zoomEditorMenos" type="button" title="Afastar planta" aria-label="Afastar planta">−</button>
+                <button id="ajustarEditor" type="button" title="Mostrar planta inteira" aria-label="Mostrar planta inteira">⛶</button>
+                <button id="zoomEditorReal" type="button" title="Tamanho original" aria-label="Mostrar tamanho original">1:1</button>
+                <span id="escalaEditor" class="escala-editor" aria-live="polite">100%</span>
+            </div>
+            <div id="mensagemEditor" class="mensagem-mapa">Cadastre ou selecione uma planta.</div>
+            <div id="viewportEditor" class="viewport-mapa editor-viewport" hidden>
+                <div id="palcoEditor" class="palco-editor"><svg id="svgEditor" role="img" aria-label="Editor de ambientes da planta"></svg></div>
+            </div>
+        </section>
+    </main>
+
+    <dialog id="dialogPlanta" class="dialog-mapa">
+        <form id="formPlanta">
+            <h2 id="tituloFormPlanta">Nova planta</h2>
+            <input id="plantaId" type="hidden">
+            <label>Nome<input id="plantaNome" required maxlength="120" placeholder="Ex.: Prédio administrativo — térreo"></label>
+            <label>Descrição<textarea id="plantaDescricao" maxlength="300" rows="3"></textarea></label>
+            <label>Ordem<input id="plantaOrdem" type="number" value="0"></label>
+            <label id="grupoArquivoPlanta">Arquivo da planta<input id="plantaArquivo" type="file" accept="application/pdf,.pdf,image/png,image/jpeg,image/webp"></label>
+            <label class="check"><input id="plantaAtiva" type="checkbox" checked> Planta ativa</label>
+            <p class="instrucao">Formatos: PDF de uma página, PNG, JPG ou WebP. Tamanho máximo: 10 MB. Para PDF, use a planta recortada e na orientação desejada.</p>
+            <div class="acoes-editor"><button id="cancelarPlanta" type="button">Cancelar</button><button type="submit">Salvar</button></div>
+        </form>
+    </dialog>
+
+    <div id="notificacao" class="notificacao" hidden></div>
+    <script src="js/auth.js"></script>
+    <script src="vendor/pdfjs/pdf.min.js"></script>
+    <script src="js/planta-pdf.js"></script>
+    <script src="js/mapa-admin.js"></script>
+<script src="/js/rodape.js" defer></script>
+</body>
+</html>

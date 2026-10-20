@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Selecionar unidade | Touch Inventory</title>
+<link rel="icon" href="/Imagens/favicon.svg">
+<link rel="stylesheet" href="/css/style_unidades.css">
+</head>
+<body>
+<header class="topo"><div><span class="marca">TOUCH INVENTORY</span><h1>Selecione a unidade</h1><p>Escolha onde deseja trabalhar.</p></div><button id="sair" type="button">Sair</button></header>
+<main>
+<div class="barra"><div><p id="mensagem" role="status"></p><a id="selecaoGeral" href="/unidades.html" hidden>Ver todas as unidades</a></div><button id="nova" type="button" hidden>+ Nova unidade</button></div>
+<section id="grade" class="grade" aria-label="Unidades disponíveis"></section>
+</main>
+<dialog id="dialogo"><form id="formUnidade"><h2 id="tituloDialogo">Nova unidade</h2><p id="erroDialogo" role="alert" hidden></p><input id="idUnidade" type="hidden">
+<label>Nome da unidade<input id="nomeUnidade" maxlength="120" required></label>
+<label>Logo da unidade<input id="logoUnidade" type="file" accept="image/png,image/jpeg,image/webp"></label>
+<p>PNG, JPEG ou WebP, até 2 MB. Você pode adicionar a logo depois.</p>
+<div class="acoes"><button id="cancelar" type="button">Cancelar</button><button type="submit">Salvar</button></div></form></dialog>
+<script src="/js/unidades.js"></script>
+<script src="/js/rodape.js" defer></script>
+</body></html>

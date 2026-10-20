@@ -1,21 +1,35 @@
+// =====================
+// Estado e configurações da interface
+// =====================
+
 const cacheContextoTipos = new Map();
 
+// =====================
+// Funções da interface
+// =====================
+
+// Função: Converte o nome do tipo em texto sem espaços externos e em minúsculas para permitir comparações consistentes.
 function normalizarNomeTipo(valor) {
     return String(valor || "")
         .trim()
         .toLocaleLowerCase("pt-BR");
 }
 
+// Função: Converte a resposta HTTP em JSON e lança uma mensagem compreensível quando a requisição não é bem-sucedida.
 async function lerResposta(response, mensagemPadrao) {
     const dados = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-        throw new Error(dados.erro || mensagemPadrao);
+        const erro = new Error(dados.erro || mensagemPadrao);
+        erro.status = response.status;
+        erro.codigo = dados.codigo;
+        throw erro;
     }
 
     return dados;
 }
 
+// Função: Localiza o tipo de ativo solicitado, seus campos dinâmicos e seus status, reutilizando o resultado armazenado em cache.
 async function obterContextoTipo(nomeTipo) {
     const chave = normalizarNomeTipo(nomeTipo);
 
@@ -23,6 +37,7 @@ async function obterContextoTipo(nomeTipo) {
         return cacheContextoTipos.get(chave);
     }
 
+    // Função: Agrupa e armazena em cache as consultas necessárias para montar o contexto completo do tipo de ativo.
     const promessa = (async () => {
         const responseTipos = await fetch("/api/tipos");
         const tipos = await lerResposta(
@@ -30,11 +45,13 @@ async function obterContextoTipo(nomeTipo) {
             "Erro ao carregar tipos de ativo"
         );
 
-        const tipoEncontrado = tipos.find(
+        const tiposEncontrados = tipos.filter(
             (item) =>
-                String(item.id) === String(nomeTipo) ||
-                normalizarNomeTipo(item.nome) === chave
+                /^\d+$/.test(String(nomeTipo)) ? String(item.id)===String(nomeTipo)
+                    : normalizarNomeTipo(item.nome)===chave
         );
+        if (tiposEncontrados.length>1) throw new Error("Nome de tipo ambíguo. Abra o tipo pela página inicial.");
+        const tipoEncontrado=tiposEncontrados[0];
 
         if (!tipoEncontrado) {
             throw new Error(`Tipo de ativo "${nomeTipo}" não encontrado`);
@@ -79,7 +96,9 @@ async function obterContextoTipo(nomeTipo) {
             ordem: 0,
             campo_sistema: true
         };
-        const responseStatus = await fetch("/api/gestao/status");
+        const responseStatus = await fetch(
+            "/api/gestao/status?apenasAtivos=true"
+        );
         const status = await lerResposta(
             responseStatus,
             "Erro ao carregar status"
@@ -130,10 +149,12 @@ async function obterContextoTipo(nomeTipo) {
     }
 }
 
+// Função: Filtra a configuração e devolve somente os campos marcados para exibição.
 function camposVisiveis(campos) {
     return campos.filter((campo) => campo.visivel !== false);
 }
 
+// Função: Traduz o tipo lógico do campo para o tipo de controle HTML usado no formulário.
 function tipoInput(campo) {
     const tipos = {
         texto: "text",
@@ -148,6 +169,7 @@ function tipoInput(campo) {
     return tipos[campo.tipo] || "text";
 }
 
+// Função: Converte o valor armazenado para um texto amigável conforme o tipo e as opções configuradas do campo.
 function formatarValorCampo(campo, valor) {
     if (valor === undefined || valor === null || valor === "") {
         return "";

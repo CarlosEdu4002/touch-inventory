@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exportações e Relatórios | Touch Inventory</title>
+    <link rel="icon" href="/Imagens/favicon.svg">
+    <link rel="stylesheet" href="css/style_exportacoes.css">
+</head>
+<body>
+    <header class="barra">
+        <a href="index.html">← Voltar ao início</a>
+        <div><span id="usuarioSessao"></span><button id="btnSair" type="button">Sair</button></div>
+    </header>
+    <main>
+        <section class="apresentacao">
+            <p class="rotulo">GESTÃO E PORTABILIDADE</p>
+            <h1>Exportações e Relatórios</h1>
+            <p>Escolha o objetivo, configure apenas o essencial e gere o arquivo no formato adequado.</p>
+        </section>
+
+        <div class="layout">
+            <aside class="catalogo" aria-label="Relatórios disponíveis">
+                <div class="catalogo-cabecalho">
+                    <span class="passo">1</span>
+                    <div><strong>Escolha o objetivo</strong><small>O formulário muda conforme a finalidade.</small></div>
+                </div>
+                <div id="listaRelatorios" class="lista-relatorios"></div>
+            </aside>
+
+            <section class="painel">
+                <div class="painel-cabecalho">
+                    <div id="iconeRelatorio" class="icone-relatorio" aria-hidden="true">▦</div>
+                    <div class="titulo-relatorio">
+                        <p id="grupoRelatorio" class="rotulo">DADOS OPERACIONAIS</p>
+                        <h2 id="tituloRelatorio">Inventário de ativos</h2>
+                        <p id="descricaoRelatorio"></p>
+                    </div>
+                </div>
+
+                <form id="formExportacao">
+                    <input id="tipoRelatorio" type="hidden" value="inventario">
+                    <input id="formato" type="hidden" value="csv">
+
+                    <section class="etapa etapa-principal">
+                        <div class="etapa-cabecalho">
+                            <span class="passo">2</span>
+                            <div><h3 id="perguntaPrincipal"></h3><p id="ajudaPrincipal"></p></div>
+                        </div>
+                        <div id="estadoPrincipal" class="estado-principal" hidden></div>
+                        <div id="filtrosPrincipais" class="grade-filtros"></div>
+                    </section>
+
+                    <section class="etapa etapa-formato">
+                        <div class="etapa-cabecalho">
+                            <span class="passo">3</span>
+                            <div><h3>Como deseja usar o arquivo?</h3><p>O formato altera a apresentação, não as permissões dos dados.</p></div>
+                        </div>
+                        <div id="opcoesFormato" class="opcoes-formato" role="radiogroup" aria-label="Formato do arquivo"></div>
+                    </section>
+
+                    <details id="refinamento" class="refinamento">
+                        <summary>
+                            <span class="icone-ajuste" aria-hidden="true">☷</span>
+                            <span><strong>Refinar resultado</strong><small>Filtros opcionais para uma consulta mais específica.</small></span>
+                            <span id="contagemFiltros" class="contagem-filtros" hidden>0 ativos</span>
+                        </summary>
+                        <div id="filtrosAvancados" class="grade-filtros filtros-avancados"></div>
+                    </details>
+
+                    <div id="depositoFiltros" hidden>
+                        <label data-filtro="tipo_checklist">Tipo do ativo
+                            <select id="tipoChecklist"><option value="">Selecione o tipo</option></select>
+                        </label>
+                        <label data-filtro="patrimonio">Patrimônio
+                            <input id="patrimonio" maxlength="50" placeholder="Ex.: LABEXP-2026">
+                        </label>
+                        <label data-filtro="categoria">Categoria
+                            <select id="categoria"><option value="">Todas as categorias</option></select>
+                        </label>
+                        <div data-filtro="tipo" class="campo-filtro">
+                            <span class="label-campo">Tipo de ativo</span>
+                            <div id="multisseletorTipo" class="multisseletor">
+                                <button id="abrirTipos" type="button" class="multisseletor-botao" aria-expanded="false" aria-controls="painelTipos">
+                                    <span id="resumoTipos">Todos os tipos</span><span aria-hidden="true">⌄</span>
+                                </button>
+                                <div id="painelTipos" class="multisseletor-painel" hidden>
+                                    <input id="buscaTipo" type="search" placeholder="Buscar tipo..." aria-label="Buscar tipo de ativo">
+                                    <div id="listaTipos" class="lista-tipos"></div>
+                                    <button id="limparTipos" type="button" class="limpar-selecao">Limpar seleção</button>
+                                </div>
+                            </div>
+                        </div>
+                        <label data-filtro="setor">Setor
+                            <select id="setor"><option value="">Todos os setores</option></select>
+                        </label>
+                        <label data-filtro="status">Status
+                            <select id="status"><option value="">Todos os status</option></select>
+                        </label>
+                        <label data-filtro="data_inicial"><span id="rotuloDataInicial">Data inicial</span>
+                            <input id="dataInicial" type="date">
+                        </label>
+                        <label data-filtro="data_final"><span id="rotuloDataFinal">Data final</span>
+                            <input id="dataFinal" type="date">
+                        </label>
+                        <label data-filtro="situacao">Situação do empréstimo
+                            <select id="situacao">
+                                <option value="todos">Todos os empréstimos</option>
+                                <option value="aberto">Somente em aberto</option>
+                                <option value="vencido">Somente vencidos</option>
+                                <option value="devolvido">Somente devolvidos</option>
+                            </select>
+                        </label>
+                        <label data-filtro="responsavel">Responsável
+                            <input id="responsavel" maxlength="150" placeholder="Nome do responsável">
+                        </label>
+                        <label data-filtro="usuario">Usuário responsável
+                            <select id="usuario"><option value="">Todos os usuários</option></select>
+                        </label>
+                        <label data-filtro="acao">Ação registrada
+                            <select id="acao"><option value="">Todas as ações</option></select>
+                        </label>
+                        <label class="detalhado" data-filtro="detalhado">
+                            <input id="detalhado" type="checkbox">
+                            <span><strong>Anexar relação detalhada</strong><small>Inclui a listagem dos ativos depois do resumo do PDF.</small></span>
+                        </label>
+                    </div>
+
+                    <section class="resumo-arquivo" aria-live="polite">
+                        <div class="resumo-icone" aria-hidden="true">✓</div>
+                        <div><span>ARQUIVO A SER GERADO</span><strong id="resumoRelatorio"></strong><p id="resumoDescricao"></p></div>
+                    </section>
+
+                    <div id="avisoPrivacidade" class="aviso privacidade" hidden>
+                        <strong>Aviso de privacidade</strong>
+                        Este relatório pode conter dados pessoais e deve ter acesso e compartilhamento controlados conforme a LGPD.
+                    </div>
+                    <div id="avisoBackup" class="aviso backup" hidden>
+                        <strong>Exportação completa não é backup</strong>
+                        O ZIP facilita a portabilidade, mas não substitui o backup do PostgreSQL. Imagens, sessões, segredos e UIDs NFC não são incluídos.
+                    </div>
+
+                    <div id="mensagem" class="mensagem" role="status" aria-live="polite"></div>
+                    <button id="gerar" class="gerar" type="submit">Exportar inventário em CSV</button>
+                </form>
+            </section>
+        </div>
+    </main>
+    <script src="js/auth.js"></script>
+    <script src="js/exportacoes.js"></script>
+<script src="/js/rodape.js" defer></script>
+</body>
+</html>

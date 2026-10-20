@@ -1,9 +1,15 @@
+// =====================
+// Estado e configurações da interface
+// =====================
+
 const estado = {
     categorias: [],
     tipos: [],
     campos: [],
     tipoCamposSelecionado: null,
-    nomeCampoAlteradoManual: false
+    nomeCampoAlteradoManual: false,
+    tipoEmEdicao: null,
+    campoEmEdicao: null
 };
 
 const elementos = {
@@ -11,6 +17,7 @@ const elementos = {
     formCategoria: document.getElementById("formCategoria"),
     categoriaId: document.getElementById("categoriaId"),
     categoriaNome: document.getElementById("categoriaNome"),
+    categoriaIcone: document.getElementById("categoriaIcone"),
     salvarCategoria: document.getElementById("salvarCategoria"),
     cancelarCategoria: document.getElementById("cancelarCategoria"),
     listaCategorias: document.getElementById("listaCategorias"),
@@ -19,6 +26,19 @@ const elementos = {
     tipoId: document.getElementById("tipoId"),
     tipoCategoria: document.getElementById("tipoCategoria"),
     tipoNome: document.getElementById("tipoNome"),
+    tipoIcone: document.getElementById("tipoIcone"),
+    tipoPermiteEmprestimo: document.getElementById("tipoPermiteEmprestimo"),
+    tipoPermiteVinculo: document.getElementById("tipoPermiteVinculo"),
+    tipoPermiteChecklist: document.getElementById("tipoPermiteChecklist"),
+    configuracaoChecklist: document.getElementById("configuracaoChecklist"),
+    checklistRecorrencia: document.getElementById("checklistRecorrencia"),
+    checklistAlertaDias: document.getElementById("checklistAlertaDias"),
+    checklistModo: document.getElementById("checklistModo"),
+    checklistModoCampo: document.getElementById("checklistModoCampo"),
+    checklistDatasCampo: document.getElementById("checklistDatasCampo"),
+    checklistDatasLista: document.getElementById("checklistDatasLista"),
+    adicionarDataChecklist: document.getElementById("adicionarDataChecklist"),
+    checklistItens: document.getElementById("checklistItens"),
     salvarTipo: document.getElementById("salvarTipo"),
     cancelarTipo: document.getElementById("cancelarTipo"),
     listaTipos: document.getElementById("listaTipos"),
@@ -44,6 +64,11 @@ const elementos = {
     listaCampos: document.getElementById("listaCampos")
 };
 
+// =====================
+// Funções da interface
+// =====================
+
+// Função: Executa uma chamada à API, interpreta o JSON retornado e transforma respostas de erro em exceções.
 async function requisicao(url, opcoes = {}) {
     const response = await fetch(url, {
         ...opcoes,
@@ -54,12 +79,16 @@ async function requisicao(url, opcoes = {}) {
     const dados = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-        throw new Error(dados.erro || "Não foi possível concluir a operação");
+        const erro = new Error(dados.erro || "Não foi possível concluir a operação");
+        erro.status = response.status;
+        erro.codigo = dados.codigo;
+        throw erro;
     }
 
     return dados;
 }
 
+// Função: Exibe o retorno das operações administrativas, diferenciando visualmente sucesso e erro.
 function mostrarMensagem(texto, erro = false) {
     elementos.mensagem.textContent = texto;
     elementos.mensagem.classList.toggle("erro", erro);
@@ -70,6 +99,7 @@ function mostrarMensagem(texto, erro = false) {
     }, 4000);
 }
 
+// Função: Cria um botão administrativo com texto, classe visual e ação de clique.
 function criarBotao(texto, classe, acao) {
     const botao = document.createElement("button");
     botao.type = "button";
@@ -79,6 +109,34 @@ function criarBotao(texto, classe, acao) {
     return botao;
 }
 
+// Função: Cria uma opção de seleção com valor, texto e estado inicial informados.
+function criarOpcao(valor, texto, selecionada = false) {
+    const opcao = document.createElement("option");
+    opcao.value = valor;
+    opcao.textContent = texto;
+    opcao.selected = selecionada;
+    return opcao;
+}
+
+// Função: Formata a autoria da última troca de ícone para auditoria visível ao setor.
+function descreverAlteracaoIcone(registro) {
+    if (!registro.icone_usuario_nome || !registro.icone_atualizado_em) {
+        return "";
+    }
+
+    const data = new Date(registro.icone_atualizado_em).toLocaleString("pt-BR");
+    return ` · Ícone alterado por ${registro.icone_usuario_nome} em ${data}`;
+}
+
+// Função: Substitui o conteúdo de uma lista por uma mensagem vazia segura.
+function mostrarListaVazia(lista, mensagem) {
+    const vazio = document.createElement("p");
+    vazio.className = "vazio";
+    vazio.textContent = mensagem;
+    lista.replaceChildren(vazio);
+}
+
+// Função: Monta um item reutilizável de lista com informações e ações de edição e remoção.
 function criarItemLista(nome, detalhe, aoEditar, aoRemover) {
     const item = document.createElement("div");
     const conteudo = document.createElement("div");
@@ -104,20 +162,24 @@ function criarItemLista(nome, detalhe, aoEditar, aoRemover) {
     return item;
 }
 
+// Função: Preenche a seleção de categorias e mantém marcada a opção informada.
 function preencherSelectCategorias(valorSelecionado = "") {
-    elementos.tipoCategoria.innerHTML =
-        '<option value="">Selecione uma categoria</option>';
+    elementos.tipoCategoria.replaceChildren(
+        criarOpcao("", "Selecione uma categoria")
+    );
 
     estado.categorias.forEach((categoria) => {
-        const option = document.createElement("option");
-        option.value = categoria.id;
-        option.textContent = categoria.nome;
-        option.selected =
-            String(categoria.id) === String(valorSelecionado);
-        elementos.tipoCategoria.appendChild(option);
+        elementos.tipoCategoria.appendChild(
+            criarOpcao(
+                categoria.id,
+                `${categoria.icone || "📁"} ${categoria.nome}`,
+                String(categoria.id) === String(valorSelecionado)
+            )
+        );
     });
 }
 
+// Função: Remove acentos e diferenças de caixa para tornar a busca textual consistente.
 function normalizarBusca(texto) {
     return String(texto || "")
         .normalize("NFD")
@@ -126,11 +188,13 @@ function normalizarBusca(texto) {
         .trim();
 }
 
+// Função: Filtra os tipos pelo texto pesquisado e atualiza as opções disponíveis no seletor.
 function preencherSelectTipos(filtro = "") {
     const selecionado = elementos.campoTipoAtivo.value;
     const termo = normalizarBusca(filtro);
-    elementos.campoTipoAtivo.innerHTML =
-        '<option value="">Selecione um tipo de ativo</option>';
+    elementos.campoTipoAtivo.replaceChildren(
+        criarOpcao("", "Selecione um tipo de ativo")
+    );
 
     const tiposFiltrados = estado.tipos.filter((tipo) =>
         normalizarBusca(
@@ -139,41 +203,112 @@ function preencherSelectTipos(filtro = "") {
     );
 
     tiposFiltrados.forEach((tipo) => {
-        const option = document.createElement("option");
-        option.value = tipo.id;
-        option.textContent = `${tipo.categoria_nome} — ${tipo.nome}`;
-        option.selected = String(tipo.id) === String(selecionado);
-        elementos.campoTipoAtivo.appendChild(option);
+        elementos.campoTipoAtivo.appendChild(
+            criarOpcao(
+                tipo.id,
+                `${tipo.categoria_nome} — ${tipo.nome}`,
+                String(tipo.id) === String(selecionado)
+            )
+        );
     });
 
     if (tiposFiltrados.length === 0) {
-        const option = document.createElement("option");
-        option.value = "";
-        option.textContent = "Nenhum tipo encontrado";
-        option.disabled = true;
-        elementos.campoTipoAtivo.appendChild(option);
+        const opcao = criarOpcao("", "Nenhum tipo encontrado");
+        opcao.disabled = true;
+        elementos.campoTipoAtivo.appendChild(opcao);
     }
 
     return tiposFiltrados;
 }
 
+// Função: Sai do modo de edição de categoria e restaura o formulário para um novo cadastro.
 function cancelarEdicaoCategoria() {
     elementos.formCategoria.reset();
+    elementos.categoriaIcone.value = "";
+    window.EmojiPicker.atualizarBotao(elementos.categoriaIcone);
     elementos.categoriaId.value = "";
     elementos.salvarCategoria.textContent = "Adicionar";
     elementos.cancelarCategoria.classList.add("oculto");
 }
 
+// Função: Sai do modo de edição de tipo de ativo e restaura os valores iniciais do formulário.
 function cancelarEdicaoTipo() {
     elementos.formTipo.reset();
+    elementos.tipoIcone.value = "";
+    window.EmojiPicker.atualizarBotao(elementos.tipoIcone);
     elementos.tipoId.value = "";
-    elementos.salvarTipo.textContent = "Adicionar";
+    estado.tipoEmEdicao = null;
+    elementos.tipoPermiteEmprestimo.checked = false;
+    elementos.tipoPermiteVinculo.checked = false;
+    elementos.tipoPermiteChecklist.checked = false;
+    elementos.checklistRecorrencia.value = "mensal";
+    elementos.checklistAlertaDias.value = "15";
+    elementos.checklistModo.value = "conclusao";
+    elementos.checklistItens.value = "";
+    preencherDatasChecklist([]);
+    atualizarCamposRecorrencia();
+    elementos.configuracaoChecklist.classList.add("oculto");
+    elementos.salvarTipo.textContent = "Adicionar tipo de ativo";
     elementos.cancelarTipo.classList.add("oculto");
 }
 
+function recorrenciaDoTipo(tipo) {
+    return tipo.checklist_recorrencia ||
+        ({ 1: "mensal", 3: "trimestral", 6: "semestral", 12: "anual" })[tipo.checklist_intervalo_meses] ||
+        "mensal";
+}
+
+function rotuloRecorrencia(tipo) {
+    return ({
+        semanal: "Semanal", mensal: "Mensal", trimestral: "Trimestral",
+        semestral: "Semestral", anual: "Anual", personalizado: "Datas específicas"
+    })[recorrenciaDoTipo(tipo)];
+}
+
+function adicionarLinhaDataChecklist(valor = "") {
+    const linha = document.createElement("div");
+    const input = document.createElement("input");
+    const remover = document.createElement("button");
+    linha.className = "data-checklist-linha";
+    input.type = "date";
+    input.value = valor;
+    remover.type = "button";
+    remover.className = "btn-remover";
+    remover.textContent = "Remover";
+    remover.addEventListener("click", () => {
+        linha.remove();
+        if (!elementos.checklistDatasLista.children.length) adicionarLinhaDataChecklist();
+    });
+    linha.append(input, remover);
+    elementos.checklistDatasLista.appendChild(linha);
+}
+
+function preencherDatasChecklist(datas) {
+    elementos.checklistDatasLista.replaceChildren();
+    (datas?.length ? datas : [""]).forEach(adicionarLinhaDataChecklist);
+}
+
+function obterDatasChecklist() {
+    return [...elementos.checklistDatasLista.querySelectorAll('input[type="date"]')]
+        .map((input) => input.value).filter(Boolean);
+}
+
+function atualizarCamposRecorrencia() {
+    const personalizado = elementos.checklistRecorrencia.value === "personalizado";
+    if (personalizado && !elementos.checklistDatasLista.children.length) {
+        adicionarLinhaDataChecklist();
+    }
+    elementos.checklistDatasCampo.classList.toggle("oculto", !personalizado);
+    elementos.checklistModoCampo.classList.toggle("oculto", personalizado);
+    elementos.checklistDatasLista.querySelectorAll('input[type="date"]')
+        .forEach((input) => { input.required = personalizado; });
+}
+
+// Função: Sai do modo de edição de campo dinâmico e limpa os controles correspondentes.
 function cancelarEdicaoCampo() {
     elementos.formCampo.reset();
     elementos.campoId.value = "";
+    estado.campoEmEdicao = null;
     elementos.campoOrdem.value = String(estado.campos.length + 1);
     elementos.campoEditavel.checked = true;
     elementos.campoVisivel.checked = true;
@@ -183,24 +318,43 @@ function cancelarEdicaoCampo() {
     estado.nomeCampoAlteradoManual = false;
 }
 
+// Função: Carrega a categoria escolhida no formulário e ativa seu modo de edição.
 function editarCategoria(categoria) {
     elementos.categoriaId.value = categoria.id;
     elementos.categoriaNome.value = categoria.nome;
+    elementos.categoriaIcone.value = categoria.icone || "";
+    window.EmojiPicker.atualizarBotao(elementos.categoriaIcone);
     elementos.salvarCategoria.textContent = "Salvar";
     elementos.cancelarCategoria.classList.remove("oculto");
     elementos.categoriaNome.focus();
 }
 
+// Função: Carrega o tipo de ativo escolhido no formulário e ativa seu modo de edição.
 function editarTipo(tipo) {
+    estado.tipoEmEdicao = { id: tipo.id, revisao: tipo.revisao };
     elementos.tipoId.value = tipo.id;
     elementos.tipoNome.value = tipo.nome;
+    elementos.tipoIcone.value = tipo.icone || "";
+    window.EmojiPicker.atualizarBotao(elementos.tipoIcone);
+    elementos.tipoPermiteEmprestimo.checked = Boolean(tipo.permite_emprestimo);
+    elementos.tipoPermiteVinculo.checked = Boolean(tipo.permite_vinculo);
+    elementos.tipoPermiteChecklist.checked = Boolean(tipo.permite_checklist);
+    elementos.checklistRecorrencia.value = recorrenciaDoTipo(tipo);
+    elementos.checklistAlertaDias.value = tipo.checklist_alerta_dias ?? 15;
+    elementos.checklistModo.value = tipo.checklist_modo || "conclusao";
+    elementos.checklistItens.value = (tipo.checklist_itens || []).join("\n");
+    preencherDatasChecklist(tipo.checklist_datas_personalizadas || []);
+    atualizarCamposRecorrencia();
+    elementos.configuracaoChecklist.classList.toggle("oculto", !tipo.permite_checklist);
     preencherSelectCategorias(tipo.categoria_id);
-    elementos.salvarTipo.textContent = "Salvar";
+    elementos.salvarTipo.textContent = "Salvar alterações";
     elementos.cancelarTipo.classList.remove("oculto");
     elementos.tipoNome.focus();
 }
 
+// Função: Carrega a configuração do campo escolhido no formulário e ativa seu modo de edição.
 function editarCampo(campo) {
+    estado.campoEmEdicao = { id: campo.id, revisao: campo.revisao };
     elementos.campoId.value = campo.id;
     elementos.campoLabel.value = campo.label;
     elementos.campoNome.value = campo.nome;
@@ -220,6 +374,7 @@ function editarCampo(campo) {
     elementos.campoLabel.focus();
 }
 
+// Função: Solicita confirmação, remove a categoria pela API e atualiza as listas administrativas.
 async function removerCategoria(categoria) {
     if (!window.confirm(`Remover a categoria "${categoria.nome}"?`)) {
         return;
@@ -236,48 +391,58 @@ async function removerCategoria(categoria) {
     }
 }
 
+// Função: Solicita confirmação, remove o tipo de ativo pela API e recarrega os dados relacionados.
 async function removerTipo(tipo) {
-    if (!window.confirm(`Remover o tipo de ativo "${tipo.nome}"?`)) {
+    const { id, nome, revisao } = tipo;
+    if (!window.confirm(`Remover o tipo de ativo "${nome}"?`)) {
         return;
     }
 
     try {
-        await requisicao(`/api/tipos/${tipo.id}`, {
-            method: "DELETE"
+        await requisicao(`/api/tipos/${id}`, {
+            method: "DELETE", body: JSON.stringify({ revisao })
         });
-        if (estado.tipoCamposSelecionado === tipo.id) {
+        if (estado.tipoCamposSelecionado === id) {
             await carregarCampos(null);
         }
         mostrarMensagem("Tipo de ativo removido com sucesso.");
         await carregarDados();
     } catch (erro) {
         mostrarMensagem(erro.message, true);
+        mostrarConflitoDeRevisao(erro, "/administracao.html");
     }
 }
 
+// Função: Solicita confirmação, remove o campo dinâmico pela API e atualiza a lista do tipo selecionado.
 async function removerCampo(campo) {
-    if (!window.confirm(`Remover o campo "${campo.label}"?`)) {
+    const { id, label, revisao } = campo;
+    if (!window.confirm(`Remover o campo "${label}"?`)) {
         return;
     }
 
     try {
-        await requisicao(`/api/campos/${campo.id}`, {
-            method: "DELETE"
+        await requisicao(`/api/campos/${id}`, {
+            method: "DELETE", body: JSON.stringify({ revisao })
         });
         mostrarMensagem("Campo removido com sucesso.");
         await carregarCampos(estado.tipoCamposSelecionado);
+        await carregarDados();
     } catch (erro) {
         mostrarMensagem(erro.message, true);
+        mostrarConflitoDeRevisao(erro, "/administracao.html");
     }
 }
 
+// Função: Reconstrói a lista visual de categorias e vincula suas ações de manutenção.
 function renderizarCategorias() {
-    elementos.listaCategorias.innerHTML = "";
+    elementos.listaCategorias.replaceChildren();
     elementos.totalCategorias.textContent = estado.categorias.length;
 
     if (estado.categorias.length === 0) {
-        elementos.listaCategorias.innerHTML =
-            '<p class="vazio">Nenhuma categoria cadastrada.</p>';
+        mostrarListaVazia(
+            elementos.listaCategorias,
+            "Nenhuma categoria cadastrada."
+        );
         return;
     }
 
@@ -288,8 +453,8 @@ function renderizarCategorias() {
 
         elementos.listaCategorias.appendChild(
             criarItemLista(
-                categoria.nome,
-                `${quantidadeTipos} tipo(s) de ativo`,
+                `${categoria.icone || "📁"} ${categoria.nome}`,
+                `${quantidadeTipos} tipo(s) de ativo${descreverAlteracaoIcone(categoria)}`,
                 () => editarCategoria(categoria),
                 () => removerCategoria(categoria)
             )
@@ -297,21 +462,28 @@ function renderizarCategorias() {
     });
 }
 
+// Função: Reconstrói a lista visual de tipos, agrupando-os pelas respectivas categorias.
 function renderizarTipos() {
-    elementos.listaTipos.innerHTML = "";
+    elementos.listaTipos.replaceChildren();
     elementos.totalTipos.textContent = estado.tipos.length;
 
     if (estado.tipos.length === 0) {
-        elementos.listaTipos.innerHTML =
-            '<p class="vazio">Nenhum tipo de ativo cadastrado.</p>';
+        mostrarListaVazia(
+            elementos.listaTipos,
+            "Nenhum tipo de ativo cadastrado."
+        );
         return;
     }
 
     estado.tipos.forEach((tipo) => {
         elementos.listaTipos.appendChild(
             criarItemLista(
-                tipo.nome,
-                tipo.categoria_nome,
+                `${tipo.icone || tipo.categoria_icone || "📦"} ${tipo.nome}`,
+                `${tipo.categoria_nome} · ${[
+                    tipo.permite_emprestimo && "Empréstimo",
+                    tipo.permite_checklist && `Checklist ${rotuloRecorrencia(tipo)}`,
+                    tipo.permite_vinculo && "Vínculos"
+                ].filter(Boolean).join(" · ") || "Somente patrimônio"}${descreverAlteracaoIcone(tipo)}`,
                 () => editarTipo(tipo),
                 () => removerTipo(tipo)
             )
@@ -329,22 +501,29 @@ const ROTULOS_FORMATO = {
     textarea: "Texto longo"
 };
 
+// Função: Reconstrói a lista de campos do tipo selecionado com suas propriedades e ações.
 function renderizarCampos() {
-    elementos.listaCampos.innerHTML = "";
+    elementos.listaCampos.replaceChildren();
     const camposConfiguraveis = estado.campos.filter(
         (campo) => campo.nome !== "patrimonio"
     );
     elementos.totalCampos.textContent = camposConfiguraveis.length + 1;
 
     const patrimonio = document.createElement("div");
+    const conteudoPatrimonio = document.createElement("div");
+    const nomePatrimonio = document.createElement("p");
+    const detalhePatrimonio = document.createElement("p");
+    const seloPatrimonio = document.createElement("span");
     patrimonio.className = "item-lista campo-sistema";
-    patrimonio.innerHTML = `
-        <div class="item-conteudo">
-            <p class="item-nome">Patrimônio</p>
-            <p class="item-detalhe">Campo obrigatório do sistema</p>
-        </div>
-        <span class="selo-sistema">Protegido</span>
-    `;
+    conteudoPatrimonio.className = "item-conteudo";
+    nomePatrimonio.className = "item-nome";
+    nomePatrimonio.textContent = "Patrimônio";
+    detalhePatrimonio.className = "item-detalhe";
+    detalhePatrimonio.textContent = "Campo obrigatório do sistema";
+    seloPatrimonio.className = "selo-sistema";
+    seloPatrimonio.textContent = "Protegido";
+    conteudoPatrimonio.append(nomePatrimonio, detalhePatrimonio);
+    patrimonio.append(conteudoPatrimonio, seloPatrimonio);
     elementos.listaCampos.appendChild(patrimonio);
 
     camposConfiguraveis.forEach((campo) => {
@@ -365,6 +544,7 @@ function renderizarCampos() {
     });
 }
 
+// Função: Busca na API os campos do tipo indicado e atualiza a área de configuração.
 async function carregarCampos(tipoId) {
     if (!tipoId) {
         estado.tipoCamposSelecionado = null;
@@ -385,6 +565,7 @@ async function carregarCampos(tipoId) {
     renderizarCampos();
 }
 
+// Função: Busca categorias e tipos disponíveis e sincroniza os seletores e listas da administração.
 async function carregarDados() {
     const [categorias, tipos] = await Promise.all([
         requisicao("/api/categorias"),
@@ -393,7 +574,7 @@ async function carregarDados() {
 
     estado.categorias = categorias;
     estado.tipos = tipos;
-    preencherSelectCategorias();
+    preencherSelectCategorias(elementos.tipoCategoria.value);
     preencherSelectTipos();
     renderizarCategorias();
     renderizarTipos();
@@ -404,11 +585,12 @@ elementos.formCategoria.addEventListener("submit", async (evento) => {
 
     const id = elementos.categoriaId.value;
     const nome = elementos.categoriaNome.value.trim();
+    const icone = elementos.categoriaIcone.value.trim();
 
     try {
         await requisicao(id ? `/api/categorias/${id}` : "/api/categorias", {
             method: id ? "PUT" : "POST",
-            body: JSON.stringify({ nome })
+            body: JSON.stringify({ nome, icone })
         });
         mostrarMensagem(
             id
@@ -426,10 +608,25 @@ elementos.formTipo.addEventListener("submit", async (evento) => {
     evento.preventDefault();
 
     const id = elementos.tipoId.value;
+    const revisaoEdicao = estado.tipoEmEdicao;
     const dados = {
         categoria_id: Number(elementos.tipoCategoria.value),
-        nome: elementos.tipoNome.value.trim()
+        nome: elementos.tipoNome.value.trim(),
+        icone: elementos.tipoIcone.value.trim(),
+        permite_emprestimo: elementos.tipoPermiteEmprestimo.checked,
+        permite_vinculo: elementos.tipoPermiteVinculo.checked,
+        permite_checklist: elementos.tipoPermiteChecklist.checked,
+        checklist_recorrencia: elementos.checklistRecorrencia.value,
+        checklist_datas_personalizadas: obterDatasChecklist(),
+        checklist_alerta_dias: Number(elementos.checklistAlertaDias.value),
+        checklist_modo: elementos.checklistModo.value,
+        checklist_itens: elementos.checklistItens.value.split("\n")
+            .map((item) => item.trim()).filter(Boolean)
     };
+    if (id) {
+        if (String(revisaoEdicao?.id) !== id) return mostrarMensagem("Abra novamente o tipo para editar.", true);
+        dados.revisao = revisaoEdicao.revisao;
+    }
 
     try {
         await requisicao(id ? `/api/tipos/${id}` : "/api/tipos", {
@@ -445,6 +642,7 @@ elementos.formTipo.addEventListener("submit", async (evento) => {
         await carregarDados();
     } catch (erro) {
         mostrarMensagem(erro.message, true);
+        mostrarConflitoDeRevisao(erro, "/administracao.html");
     }
 });
 
@@ -452,6 +650,7 @@ elementos.formCampo.addEventListener("submit", async (evento) => {
     evento.preventDefault();
 
     const id = elementos.campoId.value;
+    const revisaoEdicao = estado.campoEmEdicao;
     const formato = elementos.campoFormato.value;
     const opcoes = ["select", "selecao"].includes(formato)
         ? elementos.campoOpcoes.value
@@ -470,6 +669,10 @@ elementos.formCampo.addEventListener("submit", async (evento) => {
         visivel: elementos.campoVisivel.checked,
         ordem: Number(elementos.campoOrdem.value)
     };
+    if (id) {
+        if (String(revisaoEdicao?.id) !== id) return mostrarMensagem("Abra novamente o campo para editar.", true);
+        dados.revisao = revisaoEdicao.revisao;
+    }
 
     try {
         await requisicao(id ? `/api/campos/${id}` : "/api/campos", {
@@ -482,8 +685,10 @@ elementos.formCampo.addEventListener("submit", async (evento) => {
                 : "Campo criado com sucesso."
         );
         await carregarCampos(estado.tipoCamposSelecionado);
+        await carregarDados();
     } catch (erro) {
         mostrarMensagem(erro.message, true);
+        mostrarConflitoDeRevisao(erro, "/administracao.html");
     }
 });
 
@@ -492,6 +697,13 @@ elementos.cancelarCategoria.addEventListener(
     cancelarEdicaoCategoria
 );
 elementos.cancelarTipo.addEventListener("click", cancelarEdicaoTipo);
+elementos.tipoPermiteChecklist.addEventListener("change", () => {
+    elementos.configuracaoChecklist.classList.toggle(
+        "oculto", !elementos.tipoPermiteChecklist.checked
+    );
+});
+elementos.checklistRecorrencia.addEventListener("change", atualizarCamposRecorrencia);
+elementos.adicionarDataChecklist.addEventListener("click", () => adicionarLinhaDataChecklist());
 elementos.cancelarCampo.addEventListener(
     "click",
     cancelarEdicaoCampo
@@ -522,6 +734,7 @@ elementos.campoFormato.addEventListener("change", () => {
     );
 });
 
+// Função: Converte um texto em identificador simples, sem acentos ou caracteres incompatíveis.
 function gerarIdentificador(texto) {
     return texto
         .normalize("NFD")
@@ -544,8 +757,10 @@ elementos.campoNome.addEventListener("input", () => {
     estado.nomeCampoAlteradoManual = true;
 });
 
+// Função: Valida o acesso administrativo, carrega os dados iniciais e ativa os eventos da página.
 async function iniciarAdministracao() {
     await protegerPagina();
+    window.EmojiPicker.iniciar();
     await carregarDados();
 }
 

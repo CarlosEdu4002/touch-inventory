@@ -1,12 +1,20 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+<!-- ===================== -->
+<!-- Metadados e recursos da página -->
+<!-- ===================== -->
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Touch Inventory</title>
-    <link rel="icon" href="/Imagens/logo.svg">
+    <title>Controle Patrimonial</title>
+    <link rel="shortcut icon" href="/Imagens/favicon.svg" type="image/x-icon">
     <link rel="stylesheet" href="css/style_Index.css">
 </head>
+<!-- ===================== -->
+<!-- Conteúdo da página -->
+<!-- ===================== -->
+
 <body>
     <main class="pagina-inicial">
         <header class="cabecalho-inicial">
@@ -18,30 +26,13 @@
 
             <div>
                 <p class="rotulo-sistema">Touch Inventory</p>
-                <h1>Gestão de ativos</h1>
+                <h1>Controle Patrimonial</h1>
                 <p id="instrucao">
                     Selecione abaixo o tipo de ativo que deseja consultar.
                 </p>
             </div>
 
             <aside class="conta-acoes" aria-label="Acesso e sessão">
-                <div class="painel-administrativo">
-                    <p class="painel-titulo">
-                        <span class="painel-icone" aria-hidden="true">⚙</span>
-                        Área administrativa
-                    </p>
-                    <nav class="painel-links" aria-label="Opções administrativas">
-                        <a class="admin-link" href="administracao.html">
-                            Administração
-                            <span aria-hidden="true">›</span>
-                        </a>
-                        <a class="admin-link" href="gestao.html" data-admin>
-                            Gestão do sistema
-                            <span aria-hidden="true">›</span>
-                        </a>
-                    </nav>
-                </div>
-
                 <div class="sessao-acoes">
                     <div class="sessao-identidade">
                         <span class="sessao-rotulo">Sessão ativa</span>
@@ -54,24 +45,74 @@
             </aside>
         </header>
 
+        <section class="atalhos" aria-labelledby="tituloAtalhos">
+            <div class="secao-cabecalho">
+                <div><p class="secao-rotulo">Acesso rápido</p><h2 id="tituloAtalhos">O que deseja fazer?</h2></div>
+                <p>Abra diretamente as ferramentas mais utilizadas.</p>
+            </div>
+            <nav class="painel-links" aria-label="Opções administrativas">
+                <a class="admin-link" href="mapa.html"><span class="atalho-icone" aria-hidden="true">⌖</span><span><strong>Mapa</strong><small>Localizar ativos</small></span><b aria-hidden="true">›</b></a>
+                <a class="admin-link" href="checklists.html"><span class="atalho-icone" aria-hidden="true">✓</span><span><strong>Checklists</strong><small>Realizar inspeções</small></span><b aria-hidden="true">›</b></a>
+                <a class="admin-link" href="grupos.html"><span class="atalho-icone" aria-hidden="true">▦</span><span><strong>Grupos</strong><small>Consultar conjuntos</small></span><b aria-hidden="true">›</b></a>
+                <a class="admin-link" href="administracao.html"><span class="atalho-icone" aria-hidden="true">⚙</span><span><strong>Administração</strong><small>Categorias e tipos</small></span><b aria-hidden="true">›</b></a>
+                <a class="admin-link" href="exportacoes.html"><span class="atalho-icone" aria-hidden="true">⇩</span><span><strong>Relatórios</strong><small>Exportar informações</small></span><b aria-hidden="true">›</b></a>
+                <a class="admin-link" href="gestao.html" data-admin><span class="atalho-icone" aria-hidden="true">◉</span><span><strong>Gestão</strong><small>Usuários e setores</small></span><b aria-hidden="true">›</b></a>
+            </nav>
+        </section>
+
+        <div class="secao-cabecalho secao-situacao">
+            <div><p class="secao-rotulo">Visão geral</p><h2>Situação atual</h2></div>
+            <p>Indicadores atualizados do patrimônio.</p>
+        </div>
+
         <section class="dashboard" aria-label="Resumo patrimonial">
             <article class="indicador">
                 <span>Total de ativos</span>
                 <strong id="totalAtivos">—</strong>
             </article>
-            <article class="indicador alerta">
-                <span>Em manutenção</span>
-                <strong id="totalManutencao">—</strong>
-            </article>
             <article class="indicador">
-                <span>Sem atualização há 180 dias</span>
-                <strong id="totalDesatualizados">—</strong>
+                <span>Em uso</span>
+                <strong id="totalEmUso">—</strong>
             </article>
-            <article class="movimentacoes">
-                <h2>Movimentações recentes</h2>
-                <div id="movimentacoesRecentes"></div>
+            <article class="indicador atencao">
+                <span>Exigem atenção</span>
+                <strong id="totalAtencao">—</strong>
+                <p id="detalheAtencao">Manutenção: — · Extraviados: —</p>
+            </article>
+            <article id="painelEmprestimos" class="emprestimos-painel" hidden>
+                <div class="emprestimos-cabecalho">
+                    <div>
+                        <h2>Empréstimos a vencer</h2>
+                        <p id="resumoEmprestimos">Carregando empréstimos...</p>
+                    </div>
+                    <button id="verTodosEmprestimos" type="button">Ver todos</button>
+                </div>
+                <div id="emprestimosPrioritarios" class="emprestimos-lista"></div>
+            </article>
+            <article id="painelChecklists" class="emprestimos-painel" hidden>
+                <div class="emprestimos-cabecalho">
+                    <div>
+                        <h2>Checklists a realizar</h2>
+                        <p id="resumoChecklists">Carregando checklists...</p>
+                    </div>
+                    <a class="botao-painel" href="checklists.html">Abrir checklists</a>
+                </div>
+                <div id="checklistsPrioritarios" class="emprestimos-lista"></div>
             </article>
         </section>
+
+        <details class="resumo-inventario resumo-detalhado">
+            <summary>
+                <span><small>Informações gerenciais</small><strong>Ver resumo detalhado do patrimônio</strong></span>
+                <span class="resumo-acao">Exibir detalhes</span>
+            </summary>
+            <div class="resumo-grade">
+                <section class="resumo-grupo" aria-labelledby="tituloStatus"><h3 id="tituloStatus">Por situação</h3><div id="resumoStatus" class="resumo-lista"></div></section>
+                <section class="resumo-grupo" aria-labelledby="tituloSetores"><h3 id="tituloSetores">Por setor de alocação</h3><div id="resumoSetores" class="resumo-lista"></div></section>
+                <section class="resumo-grupo" aria-labelledby="tituloCategorias"><h3 id="tituloCategorias">Por categoria</h3><div id="resumoCategorias" class="resumo-lista"></div></section>
+                <section class="resumo-grupo" aria-labelledby="tituloTipos"><h3 id="tituloTipos">Por tipo</h3><div id="resumoTipos" class="resumo-lista"></div></section>
+            </div>
+        </details>
 
         <section
             id="tiposAtivo"
@@ -82,9 +123,33 @@
                 Carregando tipos de ativo...
             </p>
         </section>
+
     </main>
+
+    <dialog id="modalEmprestimos" class="modal-emprestimos">
+        <div class="emprestimos-cabecalho">
+            <h2>Todos os empréstimos abertos</h2>
+            <button id="fecharEmprestimos" type="button">Fechar</button>
+        </div>
+        <div id="todosEmprestimos" class="emprestimos-lista"></div>
+    </dialog>
+
+    <dialog id="modalProrrogar" class="modal-emprestimos modal-prorrogar">
+        <h2>Prorrogar empréstimo</h2>
+        <p id="ativoProrrogar"></p>
+        <form id="formProrrogar">
+            <label for="novoPrazo">Nova devolução (data e hora local)</label>
+            <input id="novoPrazo" type="datetime-local" required>
+            <p id="erroProrrogacao" class="erro-prorrogacao" role="alert"></p>
+            <div class="acoes-prorrogar">
+                <button id="cancelarProrrogacao" type="button">Cancelar</button>
+                <button type="submit">Salvar novo prazo</button>
+            </div>
+        </form>
+    </dialog>
 
     <script src="js/auth.js"></script>
     <script src="js/index.js"></script>
+<script src="/js/rodape.js" defer></script>
 </body>
 </html>

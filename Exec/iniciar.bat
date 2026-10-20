@@ -6,7 +6,7 @@ cd /d "%APP_DIR%"
 
 where node >nul 2>&1
 if errorlevel 1 (
-    echo Node.js nao foi encontrado. Instale o Node.js 18 ou superior.
+    echo Node.js nao foi encontrado. Instale o Node.js 22 ou superior.
     pause
     exit /b 1
 )

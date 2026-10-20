@@ -1,5 +1,14 @@
+// =====================
+// Dependências e configurações
+// =====================
+
 const camposService = require("../services/campos.service");
 
+// =====================
+// Controladores das requisições
+// =====================
+
+// Função: Converte falhas de campos dinâmicos em uma resposta HTTP apropriada, preservando mensagens conhecidas e ocultando erros internos.
 function responderErro(res, erro, mensagemPadrao) {
     console.error(erro);
 
@@ -14,6 +23,7 @@ function responderErro(res, erro, mensagemPadrao) {
     });
 }
 
+// Função: Recebe o filtro da rota, solicita a listagem de campos dinâmicos e envia o resultado ao cliente.
 async function listarPorTipo(req, res) {
     try {
         const campos = await camposService.listarCampos(
@@ -27,15 +37,17 @@ async function listarPorTipo(req, res) {
     }
 }
 
+// Função: Atende a rota de consulta de campos dinâmicos e devolve o registro encontrado ou o erro apropriado.
 async function buscar(req, res) {
     try {
-        const campo = await camposService.buscarCampo(req.params.id);
+        const campo = await camposService.buscarCampo(req.params.id, req.usuario);
         return res.json(campo);
     } catch (erro) {
         return responderErro(res, erro, "Erro ao buscar campo");
     }
 }
 
+// Função: Recebe os dados da rota, solicita a criação de campos dinâmicos e devolve o resultado ao cliente.
 async function criar(req, res) {
     try {
         const campo = await camposService.criarCampo(
@@ -48,6 +60,7 @@ async function criar(req, res) {
     }
 }
 
+// Função: Recebe as alterações da rota, solicita a atualização de campos dinâmicos e responde ao cliente.
 async function atualizar(req, res) {
     try {
         const campo = await camposService.atualizarCampo(
@@ -62,11 +75,12 @@ async function atualizar(req, res) {
     }
 }
 
+// Função: Atende a solicitação de remoção de campos dinâmicos e devolve confirmação ou erro ao cliente.
 async function remover(req, res) {
     try {
         await camposService.removerCampo(
             req.params.id,
-            req.usuario
+            req.usuario,req.body
         );
 
         return res.json({
@@ -76,6 +90,10 @@ async function remover(req, res) {
         return responderErro(res, erro, "Erro ao remover campo");
     }
 }
+
+// =====================
+// Exportações
+// =====================
 
 module.exports = {
     listarPorTipo,

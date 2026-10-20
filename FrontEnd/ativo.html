@@ -1,12 +1,20 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+<!-- ===================== -->
+<!-- Metadados e recursos da página -->
+<!-- ===================== -->
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Detalhe do Ativo</title>
-  <link rel="icon" href="/Imagens/logo.svg">
+  <link rel="icon" href="/Imagens/favicon.svg">
   <link rel="stylesheet" href="css/style_ativo.css">
 </head>
+
+<!-- ===================== -->
+<!-- Conteúdo da página -->
+<!-- ===================== -->
 
 <body>
 
@@ -28,11 +36,13 @@
     </button>
 </div>
 
+<!-- ===================== -->
+<!-- Scripts da página -->
+<!-- ===================== -->
+
 <script>
 async function voltarPagina() {
-    const params = new URLSearchParams(window.location.search);
-    const tipo = params.get("tipo");
-    const destino = `/exibeAtivos.html?tipo=${encodeURIComponent(tipo)}`;
+    const destino = "/index.html";
     const response = await fetch("/api/auth/me");
     window.location.href = response.ok
         ? destino
@@ -41,7 +51,9 @@ async function voltarPagina() {
 </script>
 
 </div>
+<script src="js/auth.js"></script>
 <script src="js/ativo.js"></script>
 
+<script src="/js/rodape.js" defer></script>
 </body>
 </html>

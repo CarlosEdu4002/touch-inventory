@@ -1,9 +1,20 @@
-const categoriasModel = require("../models/categorias.model");
+// =====================
+// Dependências e configurações
+// =====================
 
+const categoriasModel = require("../models/categorias.model");
+const { normalizarIcone } = require("../utils/icone");
+
+// =====================
+// Validações e regras de negócio
+// =====================
+
+// Função: Aplica as regras de acesso e devolve a lista de categorias disponível ao usuário.
 async function listarCategorias(usuario) {
     return categoriasModel.listar(usuario);
 }
 
+// Função: Valida a consulta e devolve o registro correspondente de categorias.
 async function buscarCategoria(id, usuario) {
     const categoria = await categoriasModel.buscarPorId(id, usuario);
 
@@ -16,6 +27,7 @@ async function buscarCategoria(id, usuario) {
     return categoria;
 }
 
+// Função: Valida os dados e permissões antes de criar o registro de categorias.
 async function criarCategoria(body, usuario) {
     const nome = body.nome?.trim();
 
@@ -28,9 +40,15 @@ async function criarCategoria(body, usuario) {
     const setorId = usuario.perfil === "admin"
         ? null
         : usuario.setor_id;
-    return categoriasModel.criar(nome, setorId);
+    return categoriasModel.criar(
+        nome,
+        normalizarIcone(body.icone),
+        setorId,
+        usuario
+    );
 }
 
+// Função: Valida dados e permissões antes de atualizar o registro de categorias.
 async function atualizarCategoria(id, body, usuario) {
     const nome = body.nome?.trim();
 
@@ -40,7 +58,16 @@ async function atualizarCategoria(id, body, usuario) {
         throw erro;
     }
 
-    const categoria = await categoriasModel.atualizar(id, nome, usuario);
+    const atual = await buscarCategoria(id, usuario);
+    const icone = body.icone === undefined
+        ? atual.icone
+        : normalizarIcone(body.icone);
+    const categoria = await categoriasModel.atualizar(
+        id,
+        nome,
+        icone,
+        usuario
+    );
 
     if (!categoria) {
         const erro = new Error("Categoria não encontrada");
@@ -51,6 +78,7 @@ async function atualizarCategoria(id, body, usuario) {
     return categoria;
 }
 
+// Função: Confere existência e permissão antes de remover o registro de categorias.
 async function removerCategoria(id, usuario) {
     const categoria = await categoriasModel.remover(id, usuario);
 
@@ -60,6 +88,10 @@ async function removerCategoria(id, usuario) {
         throw erro;
     }
 }
+
+// =====================
+// Exportações
+// =====================
 
 module.exports = {
     listarCategorias,

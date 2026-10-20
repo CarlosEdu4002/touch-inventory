@@ -1,9 +1,18 @@
+// =====================
+// Dependências e configurações
+// =====================
+
 const authService = require("../services/auth.service");
 const authModel = require("../models/auth.model");
 const { NOME_COOKIE } = require("../middlewares/auth.middleware");
 
 const tentativas = new Map();
 
+// =====================
+// Controladores das requisições
+// =====================
+
+// Função: Monta o cookie HTTP protegido que transporta o token da sessão autenticada.
 function cookieSessao(token) {
     const partes = [
         `${NOME_COOKIE}=${encodeURIComponent(token)}`,
@@ -20,6 +29,7 @@ function cookieSessao(token) {
     return partes.join("; ");
 }
 
+// Função: Converte falhas de autenticação em respostas HTTP seguras para o cliente.
 function responderErro(res, erro) {
     return res.status(erro.status || 500).json({
         erro: erro.status
@@ -28,6 +38,7 @@ function responderErro(res, erro) {
     });
 }
 
+// Função: Registra tentativas por endereço e bloqueia temporariamente excesso de autenticações.
 function verificarLimite(req) {
     const chave = req.ip || "local";
     const agora = Date.now();
@@ -54,6 +65,7 @@ function verificarLimite(req) {
     return chave;
 }
 
+// Função: Informa ao cliente se a configuração inicial de usuários já foi concluída.
 async function status(req, res) {
     try {
         return res.json(await authService.statusConfiguracao());
@@ -62,9 +74,10 @@ async function status(req, res) {
     }
 }
 
+// Função: Recebe as senhas iniciais, cria as contas padrão e confirma a configuração do acesso.
 async function configurar(req, res) {
     try {
-        await authService.configurar(req.body.senha);
+        await authService.configurar(req.body);
         return res.status(201).json({
             mensagem: "Acesso inicial configurado com sucesso"
         });
@@ -73,6 +86,7 @@ async function configurar(req, res) {
     }
 }
 
+// Função: Valida o limite e as credenciais, grava o cookie de sessão e devolve o usuário autenticado.
 async function login(req, res) {
     try {
         const chaveLimite = verificarLimite(req);
@@ -89,12 +103,14 @@ async function login(req, res) {
     }
 }
 
+// Função: Devolve os dados públicos do usuário associado à sessão atual.
 async function me(req, res) {
     return res.json({
         usuario: authService.apresentarUsuario(req.usuario)
     });
 }
 
+// Função: Remove a sessão atual, expira o cookie e confirma o encerramento do acesso.
 async function logout(req, res) {
     try {
         await authModel.removerSessao(req.tokenSessaoHash);
@@ -107,6 +123,10 @@ async function logout(req, res) {
         return responderErro(res, erro);
     }
 }
+
+// =====================
+// Exportações
+// =====================
 
 module.exports = {
     status,

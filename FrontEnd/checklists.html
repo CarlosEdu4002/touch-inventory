@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checklists periódicos | Touch Inventory</title>
+    <link rel="icon" href="/Imagens/favicon.svg">
+    <link rel="stylesheet" href="css/style_checklists.css">
+</head>
+<body>
+    <header class="topo">
+        <a href="index.html">← Voltar ao inventário</a>
+        <div><span>PREVENTIVAS E AUDITORIAS</span><h1>Checklists periódicos</h1></div>
+        <div class="conta"><span id="usuarioSessao"></span><button id="btnSair" type="button">Sair</button></div>
+    </header>
+    <main>
+        <section class="resumo" aria-label="Resumo dos checklists">
+            <article class="vencido"><span>Vencidos</span><strong id="totalVencidos">0</strong></article>
+            <article class="proximo"><span>Próximos</span><strong id="totalProximos">0</strong></article>
+            <article><span>Em dia</span><strong id="totalEmDia">0</strong></article>
+            <article class="nao-conforme"><span>Última inspeção não conforme</span><strong id="totalNaoConformes">0</strong></article>
+        </section>
+        <section class="painel">
+            <div class="filtros">
+                <label>Buscar<input id="buscaChecklist" type="search" placeholder="Patrimônio, tipo ou setor"></label>
+                <label>Situação<select id="filtroSituacao"><option value="">Todas</option><option value="vencido">Vencidos</option><option value="proximo">Próximos</option><option value="em_dia">Em dia</option></select></label>
+            </div>
+            <div class="tabela-container">
+                <table><thead><tr><th>Patrimônio</th><th>Tipo</th><th>Setor</th><th>Próxima verificação</th><th>Situação</th><th></th></tr></thead><tbody id="listaChecklists"></tbody></table>
+            </div>
+            <p id="mensagemVazia" class="vazio" hidden>Nenhum checklist encontrado.</p>
+        </section>
+    </main>
+    <dialog id="dialogChecklist">
+        <form id="formChecklist">
+            <div class="dialog-topo"><div><span id="rotuloChecklist"></span><h2 id="tituloChecklist"></h2></div><button id="fecharChecklist" type="button" aria-label="Fechar">×</button></div>
+            <p id="detalheChecklist" class="detalhe"></p>
+            <div id="estadoChecklist" class="estado-checklist" role="alert" hidden><span id="mensagemEstadoChecklist"></span></div>
+            <div id="itensChecklist" class="itens"></div>
+            <div class="anexos-checklist">
+                <label for="imagensChecklist">Imagens da verificação <span>(opcional, até 6 imagens JPG ou PNG de 2 MB cada)</span></label>
+                <input id="imagensChecklist" type="file" accept="image/jpeg,image/png" multiple>
+                <div id="previaImagensChecklist" class="grade-imagens"></div>
+            </div>
+            <label class="observacao">Observação<textarea id="observacaoChecklist" rows="4" placeholder="Obrigatória quando houver não conformidade"></textarea></label>
+            <div class="acoes"><button id="cancelarChecklist" type="button" class="secundario">Cancelar</button><button id="registrarChecklist" type="submit">Registrar verificação</button></div>
+        </form>
+        <section class="historico"><h3>Histórico</h3><div id="historicoChecklist"></div></section>
+    </dialog>
+    <div id="notificacao" class="notificacao" hidden></div>
+    <script src="js/auth.js"></script>
+    <script src="js/checklists.js"></script>
+<script src="/js/rodape.js" defer></script>
+</body>
+</html>

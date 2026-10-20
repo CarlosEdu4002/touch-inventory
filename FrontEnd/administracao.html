@@ -1,12 +1,20 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+<!-- ===================== -->
+<!-- Metadados e recursos da página -->
+<!-- ===================== -->
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Administração | Touch Inventory</title>
-    <link rel="icon" href="/Imagens/logo.svg">
+    <title>Administração | Controle Patrimonial</title>
+    <link rel="icon" href="/Imagens/favicon.svg">
     <link rel="stylesheet" href="css/style_administracao.css">
 </head>
+<!-- ===================== -->
+<!-- Conteúdo da página -->
+<!-- ===================== -->
+
 <body>
     <header class="cabecalho">
         <a class="marca" href="index.html" aria-label="Página inicial">
@@ -34,7 +42,7 @@
         <div id="mensagem" class="mensagem oculto" role="status"></div>
 
         <div class="admin-grid">
-            <section class="painel">
+            <section class="painel painel-categorias">
                 <div class="painel-cabecalho">
                     <div>
                         <p class="etapa">Etapa 1</p>
@@ -46,13 +54,23 @@
                 <form id="formCategoria" class="formulario">
                     <input id="categoriaId" type="hidden">
 
+                    <label for="categoriaIcone">
+                        Ícone padrão no mapa
+                        <small>Tipos sem ícone próprio herdarão este emoji.</small>
+                    </label>
+                    <input id="categoriaIcone" type="hidden">
+                    <button class="botao-escolher-emoji" type="button" data-emoji-target="categoriaIcone" aria-label="Escolher emoji da categoria">
+                        <span class="emoji-atual" aria-hidden="true">＋</span>
+                        <span class="emoji-descricao">Escolher emoji</span>
+                    </button>
+
                     <label for="categoriaNome">Nome da categoria</label>
                     <div class="linha-formulario">
                         <input
                             id="categoriaNome"
                             type="text"
                             maxlength="100"
-                            placeholder="Ex.: Equipamentos"
+                            placeholder="Ex.: Tecnologia da Informação"
                             required
                         >
                         <button id="salvarCategoria" type="submit">
@@ -72,7 +90,7 @@
                 <div id="listaCategorias" class="lista"></div>
             </section>
 
-            <section class="painel">
+            <section class="painel painel-tipos">
                 <div class="painel-cabecalho">
                     <div>
                         <p class="etapa">Etapa 2</p>
@@ -83,36 +101,93 @@
 
                 <form id="formTipo" class="formulario">
                     <input id="tipoId" type="hidden">
+                    <div class="tipo-form-grid">
+                        <section class="tipo-bloco">
+                            <div class="tipo-bloco-titulo"><span>1</span><div><h3>Identificação</h3><p>Defina onde o tipo ficará organizado.</p></div></div>
+                            <label for="tipoCategoria">Categoria</label>
+                            <select id="tipoCategoria" required>
+                                <option value="">Selecione uma categoria</option>
+                            </select>
 
-                    <label for="tipoCategoria">Categoria</label>
-                    <select id="tipoCategoria" required>
-                        <option value="">Selecione uma categoria</option>
-                    </select>
+                            <label for="tipoNome">Nome do tipo de ativo</label>
+                            <input id="tipoNome" type="text" maxlength="100" placeholder="Ex.: Notebook" required>
 
-                    <label for="tipoNome">Nome do tipo de ativo</label>
-                    <div class="linha-formulario">
-                        <input
-                            id="tipoNome"
-                            type="text"
-                            maxlength="100"
-                            placeholder="Ex.: Notebook"
-                            required
-                        >
-                        <button id="salvarTipo" type="submit">
-                            Adicionar
-                        </button>
+                            <label for="tipoIcone">
+                                Ícone específico no mapa
+                                <small>Deixe vazio para usar o emoji da categoria.</small>
+                            </label>
+                            <input id="tipoIcone" type="hidden">
+                            <button class="botao-escolher-emoji" type="button" data-emoji-target="tipoIcone" aria-label="Escolher emoji do tipo de ativo">
+                                <span class="emoji-atual" aria-hidden="true">＋</span>
+                                <span class="emoji-descricao">Herdar da categoria</span>
+                            </button>
+                        </section>
+
+                        <section class="tipo-bloco">
+                            <div class="tipo-bloco-titulo"><span>2</span><div><h3>Recursos</h3><p>Ative somente o que será usado.</p></div></div>
+                            <label class="opcao-tipo-emprestimo" for="tipoPermiteEmprestimo">
+                                <input id="tipoPermiteEmprestimo" type="checkbox">
+                                <span><strong>Empréstimo e devolução</strong><small>Habilita movimentações temporárias.</small></span>
+                            </label>
+                            <label class="opcao-tipo-emprestimo" for="tipoPermiteVinculo">
+                                <input id="tipoPermiteVinculo" type="checkbox">
+                                <span><strong>Vínculo com outros ativos</strong><small>Permite formar estações e conjuntos.</small></span>
+                            </label>
+                            <div class="ajuda-recursos">
+                                <strong>Dica</strong>
+                                <p>Esses recursos podem ser alterados depois, desde que não existam movimentações pendentes.</p>
+                            </div>
+                        </section>
+
+                        <section class="tipo-bloco tipo-bloco-checklist">
+                            <div class="tipo-bloco-titulo"><span>3</span><div><h3>Inspeções</h3><p>Configure apenas se houver verificação periódica.</p></div></div>
+                            <label class="opcao-tipo-emprestimo opcao-destaque" for="tipoPermiteChecklist">
+                                <input id="tipoPermiteChecklist" type="checkbox">
+                                <span><strong>Exigir checklist</strong><small>Agenda inspeções e alertas.</small></span>
+                            </label>
+
+                            <div id="configuracaoChecklist" class="configuracao-checklist oculto">
+                                <div class="checklist-grade">
+                                    <label>Recorrência
+                                        <select id="checklistRecorrencia">
+                                            <option value="semanal">Semanal</option>
+                                            <option value="mensal">Mensal</option>
+                                            <option value="trimestral">Trimestral</option>
+                                            <option value="semestral">Semestral</option>
+                                            <option value="anual">Anual</option>
+                                            <option value="personalizado">Datas específicas</option>
+                                        </select>
+                                    </label>
+                                    <label>Antecedência
+                                        <span class="campo-com-sufixo"><input id="checklistAlertaDias" type="number" min="0" max="365" value="15"><span>dias</span></span>
+                                    </label>
+                                </div>
+                                <div id="checklistDatasCampo" class="datas-checklist oculto">
+                                    <label>Datas específicas<small>Adicione os dias programados.</small></label>
+                                    <div id="checklistDatasLista" class="datas-checklist-lista"></div>
+                                    <button id="adicionarDataChecklist" type="button" class="secundario">Adicionar data</button>
+                                </div>
+                                <label id="checklistModoCampo">Próxima verificação
+                                    <select id="checklistModo">
+                                        <option value="conclusao">Contar após a execução</option>
+                                        <option value="calendario">Manter calendário fixo</option>
+                                    </select>
+                                </label>
+                                <label>Itens do checklist
+                                    <small>Uma pergunta ou conferência por linha.</small>
+                                    <textarea id="checklistItens" placeholder="Está no local correto?&#10;Está em boas condições?"></textarea>
+                                </label>
+                            </div>
+                        </section>
                     </div>
 
-                    <button
-                        id="cancelarTipo"
-                        class="cancelar oculto"
-                        type="button"
-                    >
-                        Cancelar edição
-                    </button>
+                    <div class="acoes-tipo">
+                        <button id="cancelarTipo" class="cancelar oculto" type="button">Cancelar edição</button>
+                        <button id="salvarTipo" type="submit">Adicionar tipo de ativo</button>
+                    </div>
                 </form>
 
-                <div id="listaTipos" class="lista"></div>
+                <div id="listaTipos" class="lista lista-tipos"></div>
             </section>
         </div>
 
@@ -254,7 +329,20 @@
         </section>
     </main>
 
+    <dialog id="dialogEmoji" class="dialog-emoji" aria-label="Escolher emoji">
+        <div class="emoji-cabecalho"><h2>Escolher emoji</h2><button id="fecharEmoji" type="button" aria-label="Fechar seletor">×</button></div>
+        <div id="emojiAbas" class="emoji-abas" role="tablist" aria-label="Categorias de emojis"></div>
+        <input id="buscarEmoji" type="search" placeholder="Pesquisar emoji, objeto ou ferramenta" aria-label="Pesquisar emoji">
+        <div id="emojiGrade" class="emoji-grade"></div>
+        <div class="emoji-rodape">
+            <label for="emojiManual">Outro emoji</label>
+            <div class="emoji-manual"><input id="emojiManual" type="text" maxlength="32" placeholder="Cole um emoji aqui"><button id="usarEmojiManual" type="button">Usar</button></div>
+            <button id="limparEmoji" type="button" class="limpar-emoji">Sem emoji próprio</button>
+        </div>
+    </dialog>
     <script src="js/auth.js"></script>
+    <script src="js/emoji-picker.js"></script>
     <script src="js/administracao.js"></script>
+<script src="/js/rodape.js" defer></script>
 </body>
 </html>

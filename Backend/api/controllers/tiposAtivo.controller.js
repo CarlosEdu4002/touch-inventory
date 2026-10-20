@@ -1,7 +1,16 @@
+// =====================
+// Dependências e configurações
+// =====================
+
 const tiposAtivoService = require(
     "../services/tiposAtivo.service"
 );
 
+// =====================
+// Controladores das requisições
+// =====================
+
+// Função: Converte falhas de tipos de ativo em uma resposta HTTP apropriada, preservando mensagens conhecidas e ocultando erros internos.
 function responderErro(res, erro, mensagemPadrao) {
     console.error(erro);
 
@@ -22,6 +31,7 @@ function responderErro(res, erro, mensagemPadrao) {
     });
 }
 
+// Função: Atende a rota de listagem de tipos de ativo e devolve os registros permitidos ao cliente.
 async function listar(req, res) {
     try {
         const tipos = await tiposAtivoService.listarTipos(
@@ -38,6 +48,7 @@ async function listar(req, res) {
     }
 }
 
+// Função: Recebe o filtro da rota, solicita a listagem de tipos de ativo e envia o resultado ao cliente.
 async function listarPorCategoria(req, res) {
     try {
         const tipos =
@@ -57,6 +68,7 @@ async function listarPorCategoria(req, res) {
     }
 }
 
+// Função: Atende a rota de consulta de tipos de ativo e devolve o registro encontrado ou o erro apropriado.
 async function buscar(req, res) {
     try {
         const tipo = await tiposAtivoService.buscarTipo(
@@ -74,6 +86,7 @@ async function buscar(req, res) {
     }
 }
 
+// Função: Recebe os dados da rota, solicita a criação de tipos de ativo e devolve o resultado ao cliente.
 async function criar(req, res) {
     try {
         const tipo = await tiposAtivoService.criarTipo(
@@ -91,6 +104,7 @@ async function criar(req, res) {
     }
 }
 
+// Função: Recebe as alterações da rota, solicita a atualização de tipos de ativo e responde ao cliente.
 async function atualizar(req, res) {
     try {
         const tipo = await tiposAtivoService.atualizarTipo(
@@ -109,11 +123,12 @@ async function atualizar(req, res) {
     }
 }
 
+// Função: Atende a solicitação de remoção de tipos de ativo e devolve confirmação ou erro ao cliente.
 async function remover(req, res) {
     try {
         await tiposAtivoService.removerTipo(
             req.params.id,
-            req.usuario
+            req.usuario,req.body
         );
 
         return res.json({
@@ -127,6 +142,10 @@ async function remover(req, res) {
         );
     }
 }
+
+// =====================
+// Exportações
+// =====================
 
 module.exports = {
     listar,

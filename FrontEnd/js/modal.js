@@ -1,3 +1,7 @@
+// =====================
+// Estado e configurações da interface
+// =====================
+
 const modal = document.getElementById("modal");
 const tituloModal = document.getElementById("tituloModal");
 const camposModal = document.getElementById("camposModal");
@@ -9,7 +13,13 @@ let ativoEditando = null;
 let camposFormulario = [];
 let imagemPendente = null;
 let removerImagemAtual = false;
+let tipoRevisaoFormulario = null;
 
+// =====================
+// Funções da interface
+// =====================
+
+// Função: Reduz a imagem selecionada para os limites aceitos e devolve seu conteúdo em formato de dados.
 function redimensionarImagem(arquivo) {
     return new Promise((resolve, reject) => {
         if (!["image/jpeg", "image/png", "image/webp"].includes(arquivo.type)) {
@@ -36,6 +46,7 @@ function redimensionarImagem(arquivo) {
     });
 }
 
+// Função: Monta o controle de seleção, pré-visualização e remoção da imagem do ativo.
 function criarCampoImagem(ativo) {
     const grupo = document.createElement("div");
     const label = document.createElement("label");
@@ -55,6 +66,8 @@ function criarCampoImagem(ativo) {
     remover.className = "secundario remover-imagem";
     remover.textContent = "Remover imagem";
     ajuda.textContent = "JPG, PNG ou WebP. Otimização automática.";
+
+    // Função: Atualiza a miniatura exibida no formulário e controla a liberação da URL temporária anterior.
     const atualizarPrevia = (origem) => {
         previa.src = origem || "";
         previa.hidden = !origem;
@@ -83,10 +96,12 @@ function criarCampoImagem(ativo) {
     return grupo;
 }
 
+// Função: Cria e configura o controle HTML correspondente à definição de um campo dinâmico.
 function criarControleCampo(campo, valor, edicao) {
     const grupo = document.createElement("div");
     const label = document.createElement("label");
-    const tipoControle = tipoInput(campo);
+    const booleanoObrigatorio = campo.tipo === "booleano" && campo.obrigatorio === true;
+    const tipoControle = booleanoObrigatorio ? "select" : tipoInput(campo);
     const controle = document.createElement(
         tipoControle === "textarea"
             ? "textarea"
@@ -108,9 +123,17 @@ function criarControleCampo(campo, valor, edicao) {
         tipoControle !== "select"
     ) {
         controle.type = tipoControle;
+        if (tipoControle === "number") controle.step = "any";
     }
 
-    if (tipoControle === "select") {
+    if (booleanoObrigatorio) {
+        const placeholder = new Option("Selecione Sim ou Não", "");
+        placeholder.disabled = true;
+        placeholder.selected = valor !== true && valor !== false;
+        controle.append(placeholder,
+            new Option("Sim", "true", false, valor === true),
+            new Option("Não", "false", false, valor === false));
+    } else if (tipoControle === "select") {
         const placeholder = document.createElement("option");
         placeholder.value = "";
         placeholder.textContent =
@@ -161,10 +184,12 @@ function criarControleCampo(campo, valor, edicao) {
     return grupo;
 }
 
+// Função: Carrega a configuração do tipo atual e monta os campos do formulário de cadastro ou edição.
 async function montarFormulario(ativo = {}) {
     const contexto = await obterContextoTipo(tipo);
     camposFormulario = contexto.campos;
-    camposModal.innerHTML = "";
+    tipoRevisaoFormulario = contexto.tipo.revisao;
+    camposModal.replaceChildren();
     imagemPendente = null;
     removerImagemAtual = false;
 
@@ -184,6 +209,7 @@ async function montarFormulario(ativo = {}) {
     camposModal.appendChild(criarCampoImagem(ativo));
 }
 
+// Função: Prepara um formulário vazio e abre a janela de cadastro de um novo ativo.
 async function abrirModal() {
     try {
         modoModal = "cadastro";
@@ -197,6 +223,7 @@ async function abrirModal() {
     }
 }
 
+// Função: Preenche o formulário com os dados do ativo selecionado e abre a janela de edição.
 async function abrirModalEdicao(ativo) {
     try {
         modoModal = "edicao";
@@ -210,6 +237,7 @@ async function abrirModalEdicao(ativo) {
     }
 }
 
+// Função: Fecha a janela de cadastro ou edição e redefine o modo atual do formulário.
 function fecharModal() {
     modal.classList.add("oculto");
     formModal.reset();
@@ -217,6 +245,7 @@ function fecharModal() {
     modoModal = "cadastro";
 }
 
+// Função: Lê os controles do formulário, converte os valores conforme seus tipos e monta o objeto enviado à API.
 function coletarDadosFormulario() {
     const dados = {};
 
@@ -231,13 +260,17 @@ function coletarDadosFormulario() {
         }
 
         if (campo.tipo === "booleano") {
-            dados[campo.nome] = controle.checked;
+            dados[campo.nome] = campo.obrigatorio === true
+                ? (controle.value === "" ? null : controle.value === "true")
+                : controle.checked;
             return;
         }
 
         dados[campo.nome] = controle.value.trim();
     });
 
+    dados.tipo_revisao = tipoRevisaoFormulario;
+    if (modoModal === "edicao") dados.revisao = ativoEditando.revisao;
     if (imagemPendente) dados.imagem = imagemPendente;
     if (removerImagemAtual) dados.remover_imagem = true;
     return dados;
@@ -253,9 +286,7 @@ formModal.addEventListener("submit", async (evento) => {
         const url =
             modoModal === "cadastro"
                 ? `/api/${encodeURIComponent(tipo)}`
-                : `/api/${encodeURIComponent(
-                      tipo
-                  )}/${encodeURIComponent(ativoEditando.patrimonio)}`;
+                : `/api/ativos/${encodeURIComponent(ativoEditando.id)}`;
         const response = await fetch(url, {
             method: modoModal === "cadastro" ? "POST" : "PUT",
             headers: { "Content-Type": "application/json" },
@@ -271,6 +302,7 @@ formModal.addEventListener("submit", async (evento) => {
     }
 });
 
+// Função: Exibe a confirmação de exclusão e associa a ação recebida ao botão de confirmação.
 function confirmarExclusao(texto, callback) {
     const modalConfirmacao = document.getElementById(
         "modalConfirmacao"
@@ -288,16 +320,19 @@ function confirmarExclusao(texto, callback) {
     textoConfirmacao.textContent = texto;
     modalConfirmacao.classList.remove("oculto");
 
+    // Função: Fecha a confirmação de exclusão sem executar a ação pendente.
     function fechar() {
         modalConfirmacao.classList.add("oculto");
         btnCancelarRemocao.removeEventListener("click", cancelar);
         btnConfirmarRemocao.removeEventListener("click", confirmar);
     }
 
+    // Função: Cancela a confirmação pelo teclado e impede a execução da exclusão.
     function cancelar() {
         fechar();
     }
 
+    // Função: Executa a ação confirmada e fecha a janela de confirmação.
     function confirmar() {
         fechar();
         callback();

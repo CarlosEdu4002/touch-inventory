@@ -1,5 +1,14 @@
+// =====================
+// Dependências e configurações
+// =====================
+
 const setoresModel = require("../models/setores.model");
 
+// =====================
+// Controladores das requisições
+// =====================
+
+// Função: Atende a rota de listagem de setores e devolve os registros permitidos ao cliente.
 async function listar(req, res) {
     try {
         return res.json(
@@ -16,6 +25,7 @@ async function listar(req, res) {
     }
 }
 
+// Função: Normaliza o nome do setor, exige seu preenchimento e define se o registro permanecerá ativo.
 function validar(body) {
     const nome = String(body.nome || "").trim();
     if (!nome) {
@@ -26,6 +36,7 @@ function validar(body) {
     return { nome, ativo: body.ativo !== false };
 }
 
+// Função: Converte falhas de setores em uma resposta HTTP apropriada, preservando mensagens conhecidas e ocultando erros internos.
 function responderErro(res, erro, mensagem) {
     if (erro.code === "23505") {
         return res.status(400).json({ erro: "Esse setor já existe" });
@@ -35,6 +46,7 @@ function responderErro(res, erro, mensagem) {
     });
 }
 
+// Função: Recebe os dados da rota, solicita a criação de setores e devolve o resultado ao cliente.
 async function criar(req, res) {
     try {
         const { nome } = validar(req.body);
@@ -44,6 +56,7 @@ async function criar(req, res) {
     }
 }
 
+// Função: Recebe as alterações da rota, solicita a atualização de setores e responde ao cliente.
 async function atualizar(req, res) {
     try {
         const dados = validar(req.body);
@@ -60,6 +73,10 @@ async function atualizar(req, res) {
         return responderErro(res, erro, "Erro ao atualizar setor");
     }
 }
+
+// =====================
+// Exportações
+// =====================
 
 module.exports = {
     listar,

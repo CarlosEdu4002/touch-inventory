@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grupos de itens | Touch Inventory</title>
+    <link rel="icon" href="/Imagens/favicon.svg">
+    <link rel="stylesheet" href="css/style_grupos.css">
+</head>
+<body>
+    <header class="topo">
+        <a href="index.html">← Voltar ao inventário</a>
+        <div class="titulo-topo"><span>ITENS VINCULADOS</span><h1>Grupos de itens</h1></div>
+        <div class="conta"><span id="usuarioSessao"></span><button id="btnSair" type="button">Sair</button></div>
+    </header>
+    <main>
+        <section class="apresentacao">
+            <div><p class="rotulo">Visão consolidada</p><h2 id="tituloGrupos">Todos os grupos</h2><p>Consulte quais patrimônios são movimentados em conjunto.</p></div>
+            <strong id="totalGrupos">0 grupos</strong>
+        </section>
+        <section class="filtros">
+            <label for="buscaGrupo">Buscar grupo ou item</label>
+            <input id="buscaGrupo" type="search" placeholder="Nome do grupo, patrimônio, tipo ou setor">
+            <a id="verTodosGrupos" href="grupos.html" hidden>Ver grupos de todas as categorias</a>
+        </section>
+        <section id="listaGrupos" class="lista-grupos" aria-live="polite"></section>
+        <p id="gruposVazios" class="vazio" hidden>Nenhum grupo de itens foi encontrado.</p>
+    </main>
+    <div id="notificacao" class="notificacao" hidden></div>
+    <script src="js/auth.js"></script>
+    <script src="js/grupos.js"></script>
+<script src="/js/rodape.js" defer></script>
+</body>
+</html>

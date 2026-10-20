@@ -1,21 +1,32 @@
 {
   "name": "touch-inventory-api",
-  "version": "1.0.0",
+  "version": "1.3.1",
   "description": "API do sistema genérico de gestão de ativos Touch Inventory",
   "main": "server.js",
   "scripts": {
+    "test:lixeira": "node tests/seguranca.runner.cjs --lixeira",
+    "test:campos": "node --test tests/campos.unit.cjs && node tests/seguranca.runner.cjs --campos",
+    "test:seguranca": "node tests/seguranca.runner.cjs",
+    "test:consistencia": "node tests/seguranca.runner.cjs --consistencia",
+    "limpar:imagens": "node scripts/limpar-imagens.js",
     "start": "node server.js",
-    "dev": "node --watch server.js",
-    "test": "node --test"
+    "test": "node tests/seguranca.runner.cjs --suite",
+    "test:mapas": "node tests/mapas.integration.js",
+    "test:mapas-pdf": "node --test tests/mapas-pdf.unit.js",
+    "test:mapas-pdf:browser": "node tests/mapas-pdf.browser.cjs",
+    "test:exportacoes": "node --test tests/exportacoes.unit.js tests/exportacoes.integration.js",
+    "test:checklists-imagens": "node --test tests/checklists-imagens.unit.js tests/checklists-imagens.integration.js"
   },
   "keywords": [],
-  "author": "Carlos Eduardo Gonçalves de Carvalho",
+  "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "archiver": "^8.0.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "pdfkit": "^0.20.2",
     "pg": "^8.22.0"
   }
 }

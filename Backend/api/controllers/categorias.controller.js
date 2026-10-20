@@ -1,5 +1,14 @@
+// =====================
+// Dependências e configurações
+// =====================
+
 const categoriasService = require("../services/categorias.service");
 
+// =====================
+// Controladores das requisições
+// =====================
+
+// Função: Converte falhas de categorias em uma resposta HTTP apropriada, preservando mensagens conhecidas e ocultando erros internos.
 function responderErro(res, erro, mensagemPadrao) {
     console.error(erro);
 
@@ -20,6 +29,7 @@ function responderErro(res, erro, mensagemPadrao) {
     });
 }
 
+// Função: Atende a rota de listagem de categorias e devolve os registros permitidos ao cliente.
 async function listar(req, res) {
     try {
         const categorias = await categoriasService.listarCategorias(
@@ -31,6 +41,7 @@ async function listar(req, res) {
     }
 }
 
+// Função: Atende a rota de consulta de categorias e devolve o registro encontrado ou o erro apropriado.
 async function buscar(req, res) {
     try {
         const categoria = await categoriasService.buscarCategoria(
@@ -44,6 +55,7 @@ async function buscar(req, res) {
     }
 }
 
+// Função: Recebe os dados da rota, solicita a criação de categorias e devolve o resultado ao cliente.
 async function criar(req, res) {
     try {
         const categoria = await categoriasService.criarCategoria(
@@ -57,6 +69,7 @@ async function criar(req, res) {
     }
 }
 
+// Função: Recebe as alterações da rota, solicita a atualização de categorias e responde ao cliente.
 async function atualizar(req, res) {
     try {
         const categoria = await categoriasService.atualizarCategoria(
@@ -71,6 +84,7 @@ async function atualizar(req, res) {
     }
 }
 
+// Função: Atende a solicitação de remoção de categorias e devolve confirmação ou erro ao cliente.
 async function remover(req, res) {
     try {
         await categoriasService.removerCategoria(
@@ -85,6 +99,10 @@ async function remover(req, res) {
         return responderErro(res, erro, "Erro ao remover categoria");
     }
 }
+
+// =====================
+// Exportações
+// =====================
 
 module.exports = {
     listar,

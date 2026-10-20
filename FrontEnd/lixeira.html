@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Lixeira de ativos | Touch Inventory</title>
+    <link rel="icon" href="/Imagens/favicon.svg">
+    <link rel="stylesheet" href="css/style_exibeAtivos.css"><link rel="stylesheet" href="css/lixeira.css">
+</head>
+<body>
+    <header class="cabecalho">
+        <a class="marca" href="index.html"><img src="/Imagens/logo.svg" alt="Touch Inventory"><span>Touch Inventory</span></a>
+        <div class="acoes-cabecalho"><span id="usuarioSessao" class="usuario-sessao"></span><a href="index.html">Voltar</a><button id="btnSair" type="button">Sair</button></div>
+    </header>
+    <main>
+        <section class="identificacao-lista"><h1>Lixeira de ativos</h1>
+            <p>Ativos excluídos podem ser restaurados por 30 dias, com seu patrimônio, histórico, movimentações e imagem. O patrimônio fica reservado até a limpeza definitiva.</p>
+            <p>Após o prazo, a recuperação termina e a limpeza automática libera o patrimônio. A etiqueta do ativo excluído deixa de abrir esse cadastro; um novo ativo exige uma nova etiqueta com seu ID.</p>
+        </section>
+        <p id="mensagemLixeira" role="status" aria-live="polite"></p>
+        <section class="painel-ativos"><div class="toolbar"><h2>Ativos excluídos</h2><button id="atualizarLixeira" type="button">Atualizar</button></div>
+            <div class="tabela-container"><table><thead><tr><th>Patrimônio</th><th>Tipo / categoria</th><th>Excluído por</th><th>Exclusão</th><th>Recuperável até</th><th>Ações</th></tr></thead><tbody id="ativosLixeira"></tbody></table></div>
+        </section>
+        <section class="painel-ativos"><h2>Log de exclusões e recuperações</h2><p>Últimos 200 eventos autorizados. O log permanece após a exclusão definitiva.</p>
+            <div class="tabela-container"><table><thead><tr><th>Patrimônio</th><th>Tipo</th><th>Ação</th><th>Responsável</th><th>Data e hora</th></tr></thead><tbody id="logLixeira"></tbody></table></div>
+        </section>
+    </main>
+    <script src="js/auth.js"></script><script src="js/lixeira.js"></script>
+<script src="/js/rodape.js" defer></script>
+</body>
+</html>

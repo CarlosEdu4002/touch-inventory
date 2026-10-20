@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa de ativos | Touch Inventory</title>
+    <link rel="icon" href="/Imagens/favicon.svg">
+    <link rel="stylesheet" href="css/style_mapa.css">
+</head>
+<body>
+    <header class="barra-topo">
+        <a class="voltar" href="index.html">← Início</a>
+        <div class="titulo-topo">
+            <span>TOUCH INVENTORY</span>
+            <strong>Mapa de ativos</strong>
+        </div>
+        <div class="conta">
+            <a href="mapa-admin.html" data-admin>Configurar plantas</a>
+            <span id="usuarioSessao"></span>
+            <button id="btnSair" type="button">Sair</button>
+        </div>
+    </header>
+
+    <main class="pagina-mapa">
+        <aside class="painel-lateral" aria-label="Navegação da planta">
+            <div class="controles-mapa">
+                <span class="rotulo-painel">NAVEGAÇÃO</span>
+                <label>Planta
+                    <select id="seletorPlanta"></select>
+                </label>
+                <label>Buscar ativo
+                    <input id="buscaAtivo" type="search" placeholder="Patrimônio ou tipo">
+                </label>
+                <label>Status
+                    <select id="filtroStatus"><option value="">Todos</option></select>
+                </label>
+            </div>
+            <section class="navegacao-ambientes">
+                <div class="secao-linha">
+                    <h2>Ambientes</h2>
+                    <button id="verPlantaInteira" type="button" class="botao-texto">Ver tudo</button>
+                </div>
+                <div id="listaAmbientes" class="lista-ambientes"></div>
+            </section>
+        </aside>
+
+        <section class="area-planta">
+            <div class="ferramentas-mapa" aria-label="Ferramentas do mapa">
+                <button id="zoomMais" type="button" title="Aproximar">＋</button>
+                <button id="zoomMenos" type="button" title="Afastar">−</button>
+                <button id="ajustarMapa" type="button" title="Ajustar à tela">⛶</button>
+            </div>
+            <div id="mensagemMapa" class="mensagem-mapa">Carregando plantas...</div>
+            <div id="viewportMapa" class="viewport-mapa" hidden>
+                <div id="palcoMapa" class="palco-mapa">
+                    <svg id="svgMapa" role="img" aria-label="Planta com os ativos posicionados"></svg>
+                </div>
+            </div>
+        </section>
+
+        <aside id="painelDetalhes" class="painel-detalhes" aria-label="Ativos selecionados">
+            <header class="cabecalho-detalhes">
+                <div>
+                    <span class="rotulo-painel">INSPEÇÃO</span>
+                    <h2>Ativos e detalhes</h2>
+                </div>
+                <button id="fecharPainelDetalhes" type="button" class="fechar-painel" aria-label="Fechar painel de detalhes">×</button>
+            </header>
+            <section id="ativosAgrupados" class="bloco-detalhes" hidden>
+                <div class="secao-linha">
+                    <h2>Ativos neste ponto</h2>
+                    <button id="fecharGrupo" type="button" class="botao-texto">Fechar lista</button>
+                </div>
+                <div id="listaAtivosAgrupados" class="lista-ativos-agrupados"></div>
+                <p class="instrucao">Selecione um item para destacar e consultar seus dados.</p>
+            </section>
+            <section id="detalhesAtivo" class="bloco-detalhes detalhes-ativo vazio">
+                <div class="estado-vazio-detalhes">
+                    <span aria-hidden="true">◎</span>
+                    <strong>Nenhum ativo selecionado</strong>
+                    <p>Clique em um ícone ou agrupamento na planta para visualizar os ativos aqui.</p>
+                </div>
+            </section>
+            <p class="ajuda ajuda-detalhes">Arraste um ativo para ajustar sua posição. Ele permanecerá dentro do ambiente relacionado ao seu setor. No celular, escolha um integrante do grupo e feche este painel para arrastá-lo.</p>
+        </aside>
+    </main>
+
+    <div id="notificacao" class="notificacao" hidden></div>
+    <script src="js/auth.js"></script>
+    <script src="vendor/pdfjs/pdf.min.js"></script>
+    <script src="js/planta-pdf.js"></script>
+    <script src="js/mapa.js"></script>
+<script src="/js/rodape.js" defer></script>
+</body>
+</html>

@@ -1,12 +1,20 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+<!-- ===================== -->
+<!-- Metadados e recursos da página -->
+<!-- ===================== -->
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestão do sistema | Touch Inventory</title>
-    <link rel="icon" href="/Imagens/logo.svg">
+    <link rel="icon" href="/Imagens/favicon.svg">
     <link rel="stylesheet" href="css/style_gestao.css">
 </head>
+<!-- ===================== -->
+<!-- Conteúdo da página -->
+<!-- ===================== -->
+
 <body>
     <header>
         <a href="index.html">← Voltar ao início</a>
@@ -16,10 +24,11 @@
         </div>
     </header>
     <main>
+        <p><a href="mapa-admin.html">Configurar plantas e ambientes →</a></p>
         <div class="titulo">
             <p>ADMINISTRAÇÃO</p>
             <h1>Gestão do sistema</h1>
-            <span>Contas, acessos e status padronizados dos ativos.</span>
+            <span>Contas globais, acessos e setores da unidade selecionada.</span>
         </div>
 
         <section>
@@ -28,8 +37,12 @@
                     <p>CONTAS</p>
                     <h2>Usuários e sessões</h2>
                 </div>
-                <button id="novoUsuario" type="button">Adicionar usuário</button>
+                <button id="novoUsuario" type="button" disabled>Novo usuário</button>
             </div>
+            <label class="busca-usuarios" for="buscaUsuarios">Pesquisar usuários
+                <input id="buscaUsuarios" type="search" placeholder="Nome ou login" autocomplete="off">
+            </label>
+            <p id="resultadoBuscaUsuarios" class="resultado-busca" role="status"></p>
             <div id="listaUsuarios" class="grade"></div>
         </section>
 
@@ -58,18 +71,21 @@
 
     <dialog id="dialogUsuario">
         <form id="formUsuario">
-            <h2 id="tituloUsuario">Editar usuário</h2>
+            <h2 id="tituloDialogUsuario">Editar usuário</h2>
             <input id="usuarioId" type="hidden">
-            <label id="grupoUsuarioLogin">Login<input id="usuarioLogin" minlength="3" maxlength="60"></label>
             <label>Nome<input id="usuarioNome" required></label>
-            <label id="grupoUsuarioPerfil">Perfil
-                <select id="usuarioPerfil">
+            <label>Login<input id="usuarioLogin" minlength="3" maxlength="60" autocomplete="username" required></label>
+            <label>Perfil
+                <select id="usuarioPerfil" required>
                     <option value="setor">Usuário de setor</option>
                     <option value="admin">Administrador</option>
                 </select>
             </label>
-            <label id="grupoUsuarioSetor">Setor<select id="usuarioSetor"></select></label>
-            <label>Senha<input id="usuarioSenha" type="password" minlength="8" placeholder="Deixe vazio para manter"></label>
+            <fieldset id="grupoUsuarioSetor"><legend>Unidades e setores permitidos</legend>
+                <p>Marque as unidades e os setores em que esta conta pode atuar.</p>
+                <div id="acessosUsuario"></div>
+            </fieldset>
+            <label>Nova senha<input id="usuarioSenha" type="password" minlength="8" placeholder="Deixe vazio para manter"></label>
             <label class="check"><input id="usuarioAtivo" type="checkbox"> Conta ativa</label>
             <div class="acoes">
                 <button type="button" data-fechar>Cancelar</button>
@@ -111,5 +127,6 @@
 
     <script src="js/auth.js"></script>
     <script src="js/gestao.js"></script>
+<script src="/js/rodape.js" defer></script>
 </body>
 </html>

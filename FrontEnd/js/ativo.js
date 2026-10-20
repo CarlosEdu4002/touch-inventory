@@ -1,7 +1,16 @@
-const params = new URLSearchParams(window.location.search);
-const tipo = params.get("tipo");
-const id = params.get("id");
+// =====================
+// Estado e configurações da interface
+// =====================
 
+const params = new URLSearchParams(window.location.search);
+const ativoId = params.get("ativo");
+const unidadeId = params.get("unidade");
+
+// =====================
+// Funções da interface
+// =====================
+
+// Função: Transforma um valor do ativo em texto legível de acordo com a definição do campo.
 function formatarValor(campo, valor) {
     if (valor === undefined || valor === null || valor === "") return "N/A";
     if (campo.tipo === "booleano") return valor === true ? "Sim" : "Não";
@@ -22,6 +31,7 @@ function formatarValor(campo, valor) {
     return String(valor);
 }
 
+// Função: Cria uma linha de rótulo e valor e a adiciona ao contêiner de detalhes do ativo.
 function adicionarLinha(container, labelTexto, valorTexto) {
     const linha = document.createElement("div");
     const label = document.createElement("span");
@@ -34,24 +44,46 @@ function adicionarLinha(container, labelTexto, valorTexto) {
     container.appendChild(linha);
 }
 
+// Função: Substitui o conteúdo da consulta por uma mensagem de erro segura.
+function mostrarErro(container, mensagem) {
+    const erro = document.createElement("p");
+    erro.className = "erro";
+    erro.textContent = mensagem;
+    container.replaceChildren(erro);
+}
+
+// Função: Exige a unidade indicada pela etiqueta antes de consultar o ativo.
 async function carregarAtivo() {
+    const usuario = await protegerPagina();
     const container = document.getElementById("conteudo");
-    if (!tipo || !id) {
-        container.innerHTML =
-            '<p class="erro">Ativo não informado na URL</p>';
+    if (!/^[1-9]\d*$/.test(ativoId || "") || !/^[1-9]\d*$/.test(unidadeId || "") ||
+        !Number.isSafeInteger(Number(ativoId)) || !Number.isSafeInteger(Number(unidadeId))) {
+        mostrarErro(container, "Etiqueta inválida. Grave uma nova URL com unidade e ID do ativo.");
+        return;
+    }
+    if (Number(usuario.unidade_id) !== Number(unidadeId)) {
+        const retorno = encodeURIComponent(window.location.pathname + window.location.search);
+        window.location.replace(`/unidades.html?retorno=${retorno}`);
         return;
     }
     try {
-        const response = await fetch(
-            `/api/publico/ativos/${encodeURIComponent(
-                tipo
-            )}/${encodeURIComponent(id)}`
-        );
+        const response = await fetch(`/api/ativos/${encodeURIComponent(ativoId)}/detalhes?unidade=${encodeURIComponent(unidadeId)}`);
         const dados = await response.json();
         if (!response.ok) {
             throw new Error(dados.erro || "Ativo não encontrado");
         }
-        container.innerHTML = "";
+        container.replaceChildren();
+        container.classList.toggle(
+            "sem-imagem",
+            !dados.ativo.imagem_url
+        );
+        if (dados.ativo.imagem_url) {
+            const imagem = document.createElement("img");
+            imagem.className = "imagem-ativo";
+            imagem.src = dados.ativo.imagem_url;
+            imagem.alt = `Imagem do ativo ${dados.ativo.patrimonio}`;
+            container.appendChild(imagem);
+        }
         adicionarLinha(container, "Patrimônio", dados.ativo.patrimonio);
         adicionarLinha(container, "Tipo de ativo", dados.tipo.nome);
         adicionarLinha(container, "Categoria", dados.tipo.categoria_nome);
@@ -73,8 +105,8 @@ async function carregarAtivo() {
             });
     } catch (erro) {
         console.error(erro);
-        container.innerHTML = `<p class="erro">${erro.message}</p>`;
+        mostrarErro(container, erro.message);
     }
 }
 
-carregarAtivo();
+carregarAtivo().catch(() => {});

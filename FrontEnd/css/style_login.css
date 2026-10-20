@@ -1,3 +1,7 @@
+/* ===================== */
+/* Estilos da página */
+/* ===================== */
+
 :root {
     --azul-900: #12345b;
     --azul-700: #1f65bd;
@@ -34,8 +38,10 @@ body {
     box-shadow: 0 20px 55px rgba(35, 76, 125, 0.15);
 }
 
-.logo {
-    width: 190px;
+.logo-grupo {
+    display: block;
+    width: min(223px, 100%);
+    height: auto;
     margin-bottom: 28px;
 }
 
@@ -110,8 +116,16 @@ button:hover {
     display: none;
 }
 
+/* ===================== */
+/* Adaptação para telas menores */
+/* ===================== */
+
 @media (max-width: 520px) {
+    body { display: block; }
     .login-card {
+        width: 100%;
+        max-width: 460px;
+        margin: 0 auto;
         padding: 28px 24px;
     }
 }

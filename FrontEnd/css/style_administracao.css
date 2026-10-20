@@ -1,3 +1,7 @@
+/* ===================== */
+/* Estilos da página */
+/* ===================== */
+
 :root {
     --azul-900: #12345b;
     --azul-700: #1f65bd;
@@ -88,7 +92,7 @@ select {
 }
 
 main {
-    width: min(1180px, calc(100% - 40px));
+    width: min(1680px, calc(100% - 48px));
     margin: 0 auto;
     padding: 42px 0 64px;
 }
@@ -118,8 +122,9 @@ h1 {
 
 .admin-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: minmax(330px, 0.7fr) minmax(720px, 1.8fr);
     gap: 22px;
+    align-items: start;
 }
 
 .painel {
@@ -173,6 +178,54 @@ h1 {
     font-weight: 700;
 }
 
+.formulario label small {
+    display: block;
+    margin-top: 3px;
+    color: var(--texto-suave);
+    font-weight: 400;
+}
+
+.formulario .botao-escolher-emoji {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    margin: 0 0 17px;
+    padding: 7px 10px;
+    border: 1px solid var(--borda);
+    border-radius: 9px;
+    background: white;
+    color: #334155;
+    text-align: left;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.botao-escolher-emoji:hover,
+.botao-escolher-emoji:focus-visible { border-color: var(--azul-600); background: #f2f7ff; }
+.emoji-atual { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 7px; background: #edf3fa; font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif; font-size: 1.4rem; }
+.emoji-descricao { font-size: .86rem; }
+
+.dialog-emoji { width: min(420px, calc(100vw - 24px)); max-height: min(620px, calc(100vh - 24px)); padding: 0; border: 1px solid #d5deea; border-radius: 16px; background: #fff; color: #172033; box-shadow: 0 22px 70px rgba(15, 23, 42, .28); }
+.dialog-emoji::backdrop { background: rgba(15, 23, 42, .48); }
+.emoji-cabecalho { display: flex; justify-content: space-between; align-items: center; padding: 13px 15px 8px; }
+.emoji-cabecalho h2 { margin: 0; font-size: 1rem; }
+.emoji-cabecalho button { border: 0; background: transparent; color: #64748b; font-size: 1.55rem; cursor: pointer; }
+.emoji-abas { display: flex; justify-content: space-around; gap: 2px; padding: 0 10px 8px; border-bottom: 1px solid #e7ecf3; }
+.emoji-abas button { width: 40px; min-width: 0; height: 39px; min-height: 39px; padding: 0; border: 0; border-bottom: 3px solid transparent; background: transparent; font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif; font-size: 1.25rem; cursor: pointer; }
+.emoji-abas button[aria-selected="true"] { border-bottom-color: var(--azul-600); background: #edf5ff; border-radius: 7px 7px 0 0; }
+#buscarEmoji { display: block; width: calc(100% - 28px); margin: 12px 14px; padding: 10px 12px; border: 1px solid #d2dceb; border-radius: 10px; }
+.emoji-grade { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 3px; min-height: 190px; max-height: 300px; overflow-x: hidden; overflow-y: auto; padding: 4px 12px 12px; }
+.emoji-grade button { display: grid; place-items: center; width: 100%; min-width: 0; height: 42px; padding: 0; border: 0; border-radius: 8px; background: transparent; font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif; font-size: 1.55rem; cursor: pointer; }
+.emoji-grade button:hover, .emoji-grade button:focus-visible { background: #e8f2ff; outline: 2px solid #9ac4f8; }
+.emoji-vazio { grid-column: 1 / -1; color: #64748b; font-size: .82rem; text-align: center; align-self: center; }
+.emoji-rodape { padding: 12px 14px 15px; border-top: 1px solid #e7ecf3; }
+.emoji-rodape label { display: block; margin-bottom: 5px; font-size: .75rem; font-weight: 700; color: #475569; }
+.emoji-manual { display: flex; gap: 7px; }
+.emoji-manual input { min-width: 0; flex: 1; padding: 9px; border: 1px solid #cbd5e1; border-radius: 8px; }
+.emoji-manual button { border: 0; border-radius: 8px; padding: 8px 14px; background: var(--azul-600); color: #fff; font-weight: 700; cursor: pointer; }
+.limpar-emoji { display: block; margin-top: 9px; padding: 6px 0; border: 0; background: transparent; color: var(--azul-600); font-size: .78rem; font-weight: 700; cursor: pointer; }
+
 .formulario select {
     margin-bottom: 15px;
 }
@@ -180,6 +233,186 @@ h1 {
 .linha-formulario {
     display: flex;
     gap: 9px;
+}
+
+.formulario .opcao-tipo-emprestimo {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 15px 0 4px;
+    padding: 12px;
+    border: 1px solid #dbe7f5;
+    border-radius: 9px;
+    background: #f4f8fe;
+    cursor: pointer;
+}
+
+.opcao-tipo-emprestimo input {
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    accent-color: var(--azul-600);
+}
+
+.opcao-tipo-emprestimo span,
+.opcao-tipo-emprestimo small {
+    display: block;
+}
+
+.painel-tipos .formulario {
+    padding: 18px;
+}
+
+.tipo-form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    align-items: start;
+}
+
+.tipo-bloco {
+    min-width: 0;
+    height: 100%;
+    padding: 16px;
+    border: 1px solid var(--borda);
+    border-radius: 12px;
+    background: var(--branco);
+}
+
+.tipo-bloco-titulo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 48px;
+    margin-bottom: 15px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e9eff6;
+}
+
+.tipo-bloco-titulo > span {
+    display: grid;
+    place-items: center;
+    flex: 0 0 30px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    color: var(--branco);
+    background: var(--azul-600);
+    font-size: .82rem;
+    font-weight: 800;
+}
+
+.tipo-bloco-titulo h3 {
+    color: var(--azul-900);
+    font-size: 1rem;
+}
+
+.tipo-bloco-titulo p {
+    margin-top: 2px;
+    color: var(--texto-suave);
+    font-size: .76rem;
+}
+
+.tipo-bloco > input[type="text"] {
+    margin-bottom: 15px;
+}
+
+.tipo-bloco .botao-escolher-emoji {
+    margin-bottom: 0;
+}
+
+.ajuda-recursos {
+    margin-top: 16px;
+    padding: 12px;
+    border-radius: 9px;
+    color: #3b5878;
+    background: #eef6ff;
+    font-size: .8rem;
+}
+
+.ajuda-recursos p {
+    margin-top: 4px;
+    line-height: 1.45;
+}
+
+.acoes-tipo {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.acoes-tipo .cancelar {
+    margin-top: 0;
+}
+
+.configuracao-checklist {
+    margin-top: 10px;
+    padding: 12px;
+    border: 1px solid #cfe0f5;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.checklist-grade {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.configuracao-checklist textarea {
+    min-height: 92px;
+}
+
+.datas-checklist {
+    margin: 10px 0 14px;
+    padding: 12px;
+    border: 1px solid #d8e5f5;
+    border-radius: 9px;
+    background: #f8fbff;
+}
+
+.datas-checklist-lista {
+    display: grid;
+    gap: 8px;
+    margin: 9px 0;
+}
+
+.data-checklist-linha {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+}
+
+.data-checklist-linha button {
+    min-height: 42px;
+}
+
+.campo-com-sufixo {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    background: var(--branco);
+}
+
+.campo-com-sufixo input {
+    min-width: 0;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+.campo-com-sufixo > span {
+    padding-right: 10px;
+    color: var(--texto-suave);
+    font-size: .78rem;
+}
+
+.opcao-tipo-emprestimo small {
+    margin-top: 3px;
+    color: var(--texto-suave);
+    font-weight: 400;
 }
 
 .formulario input[type="text"],
@@ -240,6 +473,26 @@ button:focus-visible {
     gap: 1px;
     max-height: 480px;
     overflow-y: auto;
+}
+
+.lista-tipos {
+    grid-template-columns: repeat(3, minmax(220px, 1fr));
+    gap: 10px;
+    max-height: 330px;
+    padding: 14px;
+    background: #f8fbff;
+}
+
+.lista-tipos .item-lista {
+    min-height: 82px;
+    padding: 12px;
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    background: var(--branco);
+}
+
+.painel-categorias .lista {
+    max-height: 610px;
 }
 
 .seletor-tipo-campos {
@@ -447,9 +700,35 @@ button:focus-visible {
     display: none;
 }
 
-@media (max-width: 820px) {
+/* ===================== */
+/* Adaptação para telas menores */
+/* ===================== */
+
+@media (max-width: 1400px) {
+    .tipo-form-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .tipo-bloco-checklist {
+        grid-column: 1 / -1;
+    }
+
+    .lista-tipos {
+        grid-template-columns: repeat(2, minmax(220px, 1fr));
+    }
+}
+
+@media (max-width: 1050px) {
     .admin-grid {
         grid-template-columns: 1fr;
+    }
+
+    .tipo-form-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .tipo-bloco-checklist {
+        grid-column: auto;
     }
 
     .form-grid {
@@ -471,7 +750,7 @@ button:focus-visible {
     }
 
     main {
-        width: min(100% - 24px, 1180px);
+        width: min(100% - 24px, 1680px);
         padding-top: 28px;
     }
 
@@ -485,11 +764,27 @@ button:focus-visible {
         grid-template-columns: 1fr;
     }
 
+    .tipo-form-grid,
+    .lista-tipos {
+        grid-template-columns: 1fr;
+    }
+
+    .tipo-bloco-checklist {
+        grid-column: auto;
+    }
+
+    .checklist-grade { grid-template-columns: 1fr; }
+
     .seletor-tipo-campos {
         grid-template-columns: 1fr;
     }
 
     .acoes-formulario {
+        align-items: stretch;
+        flex-direction: column-reverse;
+    }
+
+    .acoes-tipo {
         align-items: stretch;
         flex-direction: column-reverse;
     }

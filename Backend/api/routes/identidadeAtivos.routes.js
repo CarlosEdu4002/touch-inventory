@@ -1,0 +1,11 @@
+const router=require("express").Router();
+const controller=require("../controllers/identidadeAtivos.controller");
+router.get("/lixeira",controller.listarLixeira);
+router.get("/log-exclusoes",controller.listarLog);
+router.get("/:ativoId/detalhes",controller.detalhes);
+router.get("/:ativoId/historico",controller.historico);
+router.post("/:ativoId/restaurar",controller.restaurar);
+router.get("/:ativoId",controller.buscar);
+router.put("/:ativoId",controller.atualizar);
+router.delete("/:ativoId",controller.excluir);
+module.exports=router;

@@ -1,12 +1,20 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+<!-- ===================== -->
+<!-- Metadados e recursos da página -->
+<!-- ===================== -->
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ativos | Touch Inventory</title>
-    <link rel="icon" href="/Imagens/logo.svg">
+    <title>Ativos | Controle Patrimonial</title>
+    <link rel="icon" href="/Imagens/favicon.svg">
     <link rel="stylesheet" href="css/style_exibeAtivos.css">
 </head>
+<!-- ===================== -->
+<!-- Conteúdo da página -->
+<!-- ===================== -->
+
 <body>
     <header class="cabecalho">
         <a class="marca" href="index.html" aria-label="Página inicial">
@@ -16,15 +24,6 @@
 
         <div class="acoes-cabecalho">
             <span id="usuarioSessao" class="usuario-sessao"></span>
-            <a
-                class="atalho-admin"
-                href="administracao.html"
-                aria-label="Abrir administração"
-                title="Administração"
-            >
-                <span aria-hidden="true">⚙</span>
-                Administração
-            </a>
             <button id="btnRetornar" type="button">
                 Voltar para seleção
             </button>
@@ -33,13 +32,26 @@
     </header>
 
     <main>
+        <section id="painelLeituraContinua" class="painel-leitura oculto" aria-label="Leitura de etiquetas">
+            <div>
+                <strong>Leitura contínua</strong>
+                <p id="estadoLeituraContinua">Desativada</p>
+            </div>
+            <label class="interruptor">
+                <input id="leituraContinua" type="checkbox" role="switch">
+                <span class="trilho" aria-hidden="true"></span>
+                <span class="sr-only">Ativar leitura contínua</span>
+            </label>
+        </section>
+
         <section class="identificacao-lista">
             <p id="categoriaAtual" class="categoria-atual">
                 Carregando categoria...
             </p>
             <h1 id="tipoAtual">Carregando tipo de ativo...</h1>
             <p class="descricao-lista">
-                Consulte e gerencie os itens patrimoniais deste tipo.
+                Toque ou clique em uma linha para selecioná-la. Use
+                <strong>Abrir</strong> para consultar os detalhes.
             </p>
         </section>
 
@@ -49,16 +61,20 @@
                     <button id="btnAdicionar" type="button">Adicionar</button>
                     <button id="btnEditar" type="button">Editar</button>
                     <button id="btnRemover" type="button" class="secundario">
-                        Remover
+                        Excluir
                     </button>
-                    <button id="btnEtiqueta" type="button">
-                        Imprimir etiqueta
-                    </button>
+                    <a href="lixeira.html" class="botao-link secundario">Lixeira de ativos</a>
                     <button id="btnHistorico" type="button" class="secundario">
                         Histórico
                     </button>
+                    <button id="btnEmprestimo" type="button">
+                        Emprestar / devolver
+                    </button>
                     <button id="btnTransferir" type="button">
                         Mover de setor
+                    </button>
+                    <button id="btnVinculos" type="button">
+                        Vincular itens
                     </button>
                 </div>
 
@@ -85,6 +101,13 @@
             </div>
         </section>
     </main>
+
+    <div
+        id="notificacoes"
+        class="notificacoes"
+        aria-live="polite"
+        aria-atomic="true"
+    ></div>
 
     <div id="modal" class="modal oculto">
         <div class="modal-conteudo">
@@ -116,6 +139,7 @@
     <div id="modalTransferencia" class="modal oculto">
         <div class="modal-conteudo">
             <h2>Mover ativo de setor</h2>
+            <p id="resumoTransferencia" class="texto-apoio"></p>
             <form id="formTransferencia">
                 <div class="grupo-campo">
                     <label for="setorDestino">Novo setor de alocação</label>
@@ -157,11 +181,88 @@
         </div>
     </div>
 
+    <div id="modalMovimentacaoChave" class="modal oculto">
+        <div class="modal-conteudo modal-movimentacao">
+            <p id="rotuloAcaoChave" class="rotulo-acao-chave"></p>
+            <h2 id="tituloMovimentacaoChave">Movimentar chave</h2>
+            <div class="resumo-chave">
+                <div>
+                    <span id="rotuloAtivoMovimentacao">Chave</span>
+                    <strong id="patrimonioMovimentacao"></strong>
+                </div>
+                <div>
+                    <span>Situação atual</span>
+                    <strong id="statusMovimentacao"></strong>
+                </div>
+                <div>
+                    <span>Horário</span>
+                    <strong id="horarioMovimentacao"></strong>
+                </div>
+            </div>
+            <form id="formMovimentacaoChave">
+                <div class="grupo-campo">
+                    <label id="labelResponsavelChave" for="responsavelChave">Responsável pela retirada</label>
+                    <input id="responsavelChave" maxlength="150" autocomplete="off">
+                </div>
+                <div id="grupoPrazoDevolucao" class="grupo-campo">
+                    <label for="prazoDevolucao">Devolver até (data e hora local)</label>
+                    <input id="prazoDevolucao" type="datetime-local">
+                    <div class="prazos-rapidos" aria-label="Prazos rápidos">
+                        <button type="button" data-prazo-dias="1">1 dia</button>
+                        <button type="button" data-prazo-dias="3">3 dias</button>
+                        <button type="button" data-prazo-dias="7">7 dias</button>
+                    </div>
+                </div>
+                <div class="grupo-campo">
+                    <label for="setorResponsavelChave">Setor (opcional)</label>
+                    <select id="setorResponsavelChave">
+                        <option value="">Selecione o setor</option>
+                    </select>
+                </div>
+                <div class="grupo-campo">
+                    <label for="observacaoChave">Observação (opcional)</label>
+                    <textarea id="observacaoChave" maxlength="1000" rows="3"></textarea>
+                </div>
+                <div class="acoes-modal">
+                    <button id="cancelarMovimentacaoChave" type="button" class="secundario">Cancelar</button>
+                    <button id="confirmarMovimentacaoChave" type="submit">Confirmar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalVinculos" class="modal oculto">
+        <div class="modal-conteudo modal-vinculos">
+            <h2>Grupo de ativos</h2>
+            <p id="resumoVinculo" class="texto-apoio"></p>
+            <form id="formVinculos">
+                <div id="destinoGrupoCampo" class="grupo-campo oculto">
+                    <label for="grupoExistente">O que deseja fazer?</label>
+                    <select id="grupoExistente">
+                        <option value="">Criar um novo grupo</option>
+                    </select>
+                    <small>Você também pode incluir este ativo em um grupo já existente no mesmo setor.</small>
+                </div>
+                <div class="grupo-campo"><label for="nomeGrupo">Nome do grupo</label><input id="nomeGrupo" maxlength="120" placeholder="Ex.: Estação Produção 04" required></div>
+                <div class="grupo-campo"><label for="buscarVinculo">Adicionar ativo</label><input id="buscarVinculo" type="search" placeholder="Busque por patrimônio, tipo ou setor"><div id="candidatosVinculo" class="lista-vinculos"></div></div>
+                <div class="grupo-campo"><label>Itens selecionados</label><div id="membrosVinculo" class="lista-vinculos"></div></div>
+                <div class="acoes-modal acoes-vinculos">
+                    <button id="desvincularAtivo" type="button" class="btn-remover oculto">Desvincular este ativo</button>
+                    <button id="cancelarVinculos" type="button" class="secundario">Cancelar</button>
+                    <button type="submit">Salvar grupo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script src="js/auth.js"></script>
     <script src="js/camposDinamicos.js"></script>
     <script src="js/app.js"></script>
     <script src="js/modal.js"></script>
     <script src="js/botoes.js"></script>
     <script src="js/historico.js"></script>
+    <script src="js/leituraContinua.js"></script>
+    <script src="js/vinculos.js"></script>
+<script src="/js/rodape.js" defer></script>
 </body>
 </html>

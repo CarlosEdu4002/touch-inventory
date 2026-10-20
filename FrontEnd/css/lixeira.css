@@ -1,0 +1,17 @@
+main { max-width: 1400px; margin: auto; padding: 24px; }
+.painel-ativos { margin-bottom: 24px; padding: 20px; }
+.identificacao-lista p { max-width: 900px; line-height: 1.6; }
+.toolbar h2 { margin: 0; }
+.acoes-lixeira { display: flex; flex-wrap: wrap; gap: 8px; min-width: 155px; }
+.historico-lixeira { white-space: pre-wrap; max-width: 360px; }
+#mensagemLixeira { min-height: 24px; }
+#mensagemLixeira.erro { color: #b91c1c; }
+@media(max-width:600px) {
+    main { padding: 12px; } .painel-ativos { padding: 12px; } h1 { font-size: 1.7rem; }
+    .tabela-container { overflow: visible; }
+    table, tbody, tr, td { display: block; width: auto; min-width: 0; }
+    thead { display: none; }
+    tr { margin-bottom: 16px; border-bottom: 1px solid #dbe4ef; }
+    td { padding: 8px; overflow-wrap: anywhere; }
+    td:not([colspan])::before { content: attr(data-rotulo); display: block; font-weight: 700; margin-bottom: 4px; }
+}
